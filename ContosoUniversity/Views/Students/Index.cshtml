@@ -1,6 +1,7 @@
-﻿@model PagedList.IPagedList<ContosoUniversity.Models.Student>
-@using PagedList.Mvc;
-<link href="~/Content/PagedList.css" rel="stylesheet" type="text/css" />
+@model X.PagedList.IPagedList<ContosoUniversity.Models.Student>
+@using X.PagedList.Mvc.Core;
+@using X.PagedList;
+<link href="~/css/PagedList.css" rel="stylesheet" type="text/css" />
 
 @{
     ViewBag.Title = "Students";
@@ -13,23 +14,22 @@
    
 </p>
 <br />
-@using (Html.BeginForm("Index", "Students", FormMethod.Get))
-{
+<form asp-controller="Students" asp-action="Index" method="get">
     <p>
-        <b>Find by name:</b> @Html.TextBox("SearchString", ViewBag.CurrentFilter as string)
+        <b>Find by name:</b> <input type="text" name="SearchString" value="@(ViewBag.CurrentFilter as string)" />
         <input class="btn" type="submit" value="Search" />
     </p><br />
-}
+</form>
 <table class="table">
     <tr>
         <th>
-            @Html.ActionLink("Last Name", "Index", new { sortOrder = ViewBag.NameSortParm, currentFilter = ViewBag.CurrentFilter })
+            <a asp-action="Index" asp-route-sortOrder="@ViewBag.NameSortParm" asp-route-currentFilter="@ViewBag.CurrentFilter">Last Name</a>
         </th>
         <th>
             First Name
         </th>
         <th>
-            @Html.ActionLink("Enrollment Date", "Index", new { sortOrder = ViewBag.DateSortParm, currentFilter = ViewBag.CurrentFilter })
+            <a asp-action="Index" asp-route-sortOrder="@ViewBag.DateSortParm" asp-route-currentFilter="@ViewBag.CurrentFilter">Enrollment Date</a>
         </th>
         <th></th>
     </tr>
@@ -47,9 +47,9 @@
                 @Html.DisplayFor(modelItem => item.EnrollmentDate)
             </td>
             <td>
-                <button class="btn btn-warning" onClick="location.href =' @Url.Action("Edit", "Students", new { id = item.ID })';return false;">Edit</button>
-                <button class="btn btn-info" onClick="location.href =' @Url.Action("Details", "Students", new { id = item.ID })';return false;">Details</button>
-                <button class="btn btn-danger" onClick="location.href =' @Url.Action("Delete", "Students", new { id = item.ID })';return false;">Delete</button>
+                <button class="btn btn-warning" onClick="location.href ='@Url.Action("Edit", "Students", new { id = item.ID })';return false;">Edit</button>
+                <button class="btn btn-info" onClick="location.href ='@Url.Action("Details", "Students", new { id = item.ID })';return false;">Details</button>
+                <button class="btn btn-danger" onClick="location.href ='@Url.Action("Delete", "Students", new { id = item.ID })';return false;">Delete</button>
                
             </td>
         </tr>

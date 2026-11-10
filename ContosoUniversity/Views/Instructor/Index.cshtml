@@ -1,4 +1,4 @@
-﻿@model ContosoUniversity.ViewModels.InstructorIndexData
+@model ContosoUniversity.ViewModels.InstructorIndexData
 
 @{
     ViewBag.Title = "Instructors";
@@ -8,7 +8,7 @@
 <br/>
 
 <p>
-    <button class="btn btn-primary" onClick="location.href =' @Url.Action("Create", "Instructor")';return false;">Create New</button>
+    <button class="btn btn-primary" onClick="location.href ='@Url.Action("Create", "Instructor")';return false;">Create New</button>
    
 </p>
 <br />
@@ -45,10 +45,10 @@
                 }
             </td>
             <td>
-                <button class="btn " onClick="location.href =' @Url.Action("Index", "Instructor", new { id = item.ID })';return false;">Select</button>
-                <button class="btn btn-warning" onClick="location.href =' @Url.Action("Edit", "Instructor", new { id = item.ID })';return false;">Edit</button>
-                <button class="btn btn-info" onClick="location.href =' @Url.Action("Details", "Instructor", new { id = item.ID  })';return false;">Details</button>
-                <button class="btn btn-danger" onClick="location.href =' @Url.Action("Delete", "Instructor", new { id = item.ID  })';return false;">Delete</button>
+                <button class="btn " onClick="location.href ='@Url.Action("Index", "Instructor", new { id = item.ID })';return false;">Select</button>
+                <button class="btn btn-warning" onClick="location.href ='@Url.Action("Edit", "Instructor", new { id = item.ID })';return false;">Edit</button>
+                <button class="btn btn-info" onClick="location.href ='@Url.Action("Details", "Instructor", new { id = item.ID  })';return false;">Details</button>
+                <button class="btn btn-danger" onClick="location.href ='@Url.Action("Delete", "Instructor", new { id = item.ID  })';return false;">Delete</button>
                 @*@Html.ActionLink("Select", "Index", new { id = item.ID }) |
                 @Html.ActionLink("Edit", "Edit", new { id = item.ID }) |
                 @Html.ActionLink("Details", "Details", new { id = item.ID }) |
@@ -79,7 +79,7 @@
             }
             <tr class="@selectedRow">
                 <td>
-                    <button class="btn " onClick="location.href =' @Url.Action("Index", "Instructor", new { courseId = item.CourseID })';return false;">Select</button>
+                    <button class="btn " onClick="location.href ='@Url.Action("Index", "Instructor", new { id = ViewBag.InstructorID, courseID = item.CourseID })';return false;">Select</button>
                     @*@Html.ActionLink("Select", "Index", new { courseID = item.CourseID })*@
                 </td>
                 <td>
