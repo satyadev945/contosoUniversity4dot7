@@ -1,21 +1,19 @@
-﻿using ContosoUniversity.DAL;
-using System.Data.Entity.Infrastructure.Interception;
-using System.Web.Mvc;
-using System.Web.Optimization;
-using System.Web.Routing;
+using System.Web;
+using ContosoUniversity.Hosting;
+
+// Host-agnostic startup hook: replaces the IIS-specific Global.asax / HttpApplication
+// (Application_Start). Initialization is performed by StartupHostedService (IHostedService),
+// which first loads centralized settings from Azure App Configuration so that all scaled
+// instances are initialized consistently.
+[assembly: PreApplicationStartMethod(typeof(ContosoUniversity.ApplicationStartup), "Start")]
 
 namespace ContosoUniversity
 {
-    public class MvcApplication : System.Web.HttpApplication
+    public static class ApplicationStartup
     {
-        protected void Application_Start()
+        public static void Start()
         {
-            AreaRegistration.RegisterAllAreas();
-            FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
-            RouteConfig.RegisterRoutes(RouteTable.Routes);
-            BundleConfig.RegisterBundles(BundleTable.Bundles);
-            DbInterception.Add(new SchoolInterceptorTransientErrors());
-            DbInterception.Add(new SchoolInterceptorLogging());
+            HostedServiceRunner.Run(new StartupHostedService());
         }
     }
 }
