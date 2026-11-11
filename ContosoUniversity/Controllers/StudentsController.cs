@@ -38,8 +38,8 @@ namespace ContosoUniversity.Controllers
 
             ViewBag.CurrentFilter = searchString;
 
-            var students = from s in db.Students
-                           select s;
+            // EF Core query (no LINQ to SQL constructs); navigation data is loaded explicitly via Include() when needed
+            IQueryable<Student> students = db.Students.Include(s => s.Enrollments).AsNoTracking();
 
             if (!string.IsNullOrEmpty(searchString))
             {

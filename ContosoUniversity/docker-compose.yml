@@ -12,11 +12,11 @@ services:
       - ASPNETCORE_ENVIRONMENT=Production
       - ASPNETCORE_URLS=http://+:8080
       - TZ=UTC
-      # External SQL Server (provided separately)
+      # External PostgreSQL (provided separately)
       - DB_HOST=${DB_HOST:-host.docker.internal}
-      - DB_PORT=${DB_PORT:-1433}
-      - DB_NAME=${DB_NAME:-ContosoUniversity}
-      - DB_USER=${DB_USER:-sa}
+      - DB_PORT=${DB_PORT:-5432}
+      - DB_NAME=${DB_NAME:-contosouniversity}
+      - DB_USER=${DB_USER:-postgres}
       - DB_PASSWORD=${DB_PASSWORD:-}
     volumes:
       - ./logs:/app/logs
