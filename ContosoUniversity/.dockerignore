@@ -1,37 +1,33 @@
-# Build output
 **/bin/
 **/obj/
 **/publish/
 **/out/
-
-# Debug symbols and temp artifacts
-**/*.pdb
-**/*.log
-**/*.tmp
-**/*.temp
-**/*.cache
-**/*.user
-**/*.suo
-**/*.vs
-**/.vs/
-**/TestResults/
-**/App_Data/*.mdf
-**/App_Data/*.ldf
-
-# Source control and IDE
 .git
 .gitignore
 .gitattributes
+.vs/
+**/.vs/
+.vscode/
 **/.vscode/
+.idea/
 **/.idea/
-
-# Docker files and docs
+*.user
+**/*.user
+**/*.suo
+**/*.pdb
+**/*.log
+**/launchSettings.json
+.DS_Store
+*.md
+**/*.md
 **/Dockerfile*
 **/.dockerignore
 **/docker-compose*
-**/*.md
-
-# Secrets / local config
+**/kubernetes/
+**/scripts/
+**/docs/
+images/
 **/*.env
-**/secrets.dev.yaml
-**/values.dev.yaml
+**/TestResults/
+**/App_Data/*.mdf
+**/App_Data/*.ldf
