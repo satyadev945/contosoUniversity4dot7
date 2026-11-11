@@ -1,16 +1,20 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web;
-using System.Data.Entity;
 using ContosoUniversity.Models;
 
 namespace ContosoUniversity.DAL
 {
-    public class SchoolInitializer : System.Data.Entity.DropCreateDatabaseIfModelChanges<SchoolContext>
+    public static class SchoolInitializer
     {
-        protected override void Seed(SchoolContext context)
+        public static void Initialize(SchoolContext context)
         {
+            context.Database.EnsureCreated();
+            if (context.Students.Any())
+            {
+                return;
+            }
+
             var students = new List<Student>
             {
             new Student{FirstMidName="Carson",LastName="Alexander",EnrollmentDate=DateTime.Parse("2005-09-01")},
@@ -23,19 +27,22 @@ namespace ContosoUniversity.DAL
             new Student{FirstMidName="Nino",LastName="Olivetto",EnrollmentDate=DateTime.Parse("2005-09-01")}
             };
 
-            students.ForEach(s => context.Students.Add(s));
+            context.Students.AddRange(students);
+            context.SaveChanges();
+            var department = new Department { Name = "General Studies", Budget = 100000, StartDate = DateTime.Parse("2007-09-01") };
+            context.Departments.Add(department);
             context.SaveChanges();
             var courses = new List<Course>
             {
-            new Course{CourseID=1050,Title="Chemistry",Credits=3,},
-            new Course{CourseID=4022,Title="Microeconomics",Credits=3,},
-            new Course{CourseID=4041,Title="Macroeconomics",Credits=3,},
-            new Course{CourseID=1045,Title="Calculus",Credits=4,},
-            new Course{CourseID=3141,Title="Trigonometry",Credits=4,},
-            new Course{CourseID=2021,Title="Composition",Credits=3,},
-            new Course{CourseID=2042,Title="Literature",Credits=4,}
+            new Course{CourseID=1050,Title="Chemistry",Credits=3,DepartmentID=department.DepartmentID},
+            new Course{CourseID=4022,Title="Microeconomics",Credits=3,DepartmentID=department.DepartmentID},
+            new Course{CourseID=4041,Title="Macroeconomics",Credits=3,DepartmentID=department.DepartmentID},
+            new Course{CourseID=1045,Title="Calculus",Credits=4,DepartmentID=department.DepartmentID},
+            new Course{CourseID=3141,Title="Trigonometry",Credits=4,DepartmentID=department.DepartmentID},
+            new Course{CourseID=2021,Title="Composition",Credits=3,DepartmentID=department.DepartmentID},
+            new Course{CourseID=2042,Title="Literature",Credits=4,DepartmentID=department.DepartmentID}
             };
-            courses.ForEach(s => context.Courses.Add(s));
+            context.Courses.AddRange(courses);
             context.SaveChanges();
             var enrollments = new List<Enrollment>
             {
@@ -52,7 +59,7 @@ namespace ContosoUniversity.DAL
             new Enrollment{StudentID=6,CourseID=1045},
             new Enrollment{StudentID=7,CourseID=3141,Grade=Grade.A},
             };
-            enrollments.ForEach(s => context.Enrollments.Add(s));
+            context.Enrollments.AddRange(enrollments);
             context.SaveChanges();
         }
     }
