@@ -1,7 +1,7 @@
 ﻿@model ContosoUniversity.Models.Student
 
 @{
-    ViewBag.Title = "Delete";
+    ViewBag.Title = ContosoUniversity.Security.HtmlSanitizerService.Instance.Sanitize("Delete");
 }
 
 <h2>Delete</h2>
