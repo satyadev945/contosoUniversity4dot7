@@ -10,7 +10,7 @@ var connectionString = Environment.GetEnvironmentVariable("SCHOOL_DB_CONNECTION"
 
 builder.Services.AddControllersWithViews();
 builder.Services.AddDbContext<SchoolContext>(options =>
-    options.UseSqlServer(connectionString, sql => sql.EnableRetryOnFailure()));
+    options.UseNpgsql(connectionString, npgsql => npgsql.EnableRetryOnFailure()));
 
 // Liveness endpoint does not depend on the database; readiness (/health/ready) checks the DB.
 builder.Services.AddHealthChecks()

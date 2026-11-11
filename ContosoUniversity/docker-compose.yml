@@ -11,8 +11,8 @@ services:
       ASPNETCORE_ENVIRONMENT: Production
       ASPNETCORE_URLS: http://+:8080
       TZ: UTC
-      # External SQL Server connection string - supply at runtime, e.g. via a .env file
-      SCHOOL_DB_CONNECTION: ${SCHOOL_DB_CONNECTION:-}
+      # PostgreSQL connection string (Npgsql format)
+      SCHOOL_DB_CONNECTION: ${SCHOOL_DB_CONNECTION:-Host=postgres;Port=5432;Database=${POSTGRES_DB};Username=${POSTGRES_USER};Password=${POSTGRES_PASSWORD}}
       Logging__LogLevel__Default: Information
     volumes:
       - ./logs:/app/logs
@@ -26,6 +26,27 @@ services:
       timeout: 5s
       retries: 3
       start_period: 40s
+
+  postgres:
+    image: postgres:15
+    container_name: contosouniversity-postgres
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - app-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  pgdata:
 
 networks:
   app-network:
