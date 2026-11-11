@@ -1,25 +1,26 @@
-# Build output
 **/bin/
 **/obj/
 **/publish/
 **/out/
-# IDE / VCS
 **/.vs/
 **/.vscode/
 **/.idea/
 **/.git/
 **/.gitignore
 **/.gitattributes
-*.user
-*.suo
-# Debug symbols and temp artifacts
+**/*.user
+**/*.suo
+**/.DS_Store
+**/launchSettings.json
 **/*.pdb
 **/*.log
 **/*.tmp
-**/*.temp
 **/TestResults/
 **/*.md
-# Docker files
-Dockerfile*
-.dockerignore
-docker-compose*
+images/
+kubernetes/
+scripts/
+docs/
+**/Dockerfile*
+**/.dockerignore
+**/docker-compose*
