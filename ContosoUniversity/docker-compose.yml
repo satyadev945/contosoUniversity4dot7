@@ -1,0 +1,31 @@
+services:
+  contosouniversity:
+    image: contosouniversity:latest
+    build:
+      context: ..
+      dockerfile: ContosoUniversity/Dockerfile
+    container_name: contosouniversity
+    ports:
+      - "8080:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_URLS=http://+:8080
+      - TZ=UTC
+      # External SQL Server is provided separately
+      - ConnectionStrings__SchoolContext=${SCHOOL_CONNECTION_STRING:-Server=host.docker.internal,1433;Database=ContosoUniversity;User Id=sa;Password=changeme;TrustServerCertificate=True}
+      - Logging__LogLevel__Default=Information
+    volumes:
+      - ./logs:/app/logs
+    networks:
+      - app-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "exec 3<>/dev/tcp/127.0.0.1/8080"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 40s
+
+networks:
+  app-network:
+    driver: bridge
