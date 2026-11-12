@@ -21,7 +21,7 @@ namespace ContosoUniversity.Controllers
 
         public IActionResult About()
         {
-            var data = (from student in db.Students
+            var data = (from student in db.Students.AsNoTracking()
                         group student by student.EnrollmentDate into dataGroup
                         select new EnrollmentDataGroup()
                         {

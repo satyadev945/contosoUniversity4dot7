@@ -17,7 +17,7 @@ namespace ContosoUniversity.Models
 
         [Required]
         [StringLength(50, ErrorMessage = "First Name must be less than 50 Characters")]
-        [Column("FirstName")]
+        [Column("FirstName", TypeName = "varchar(50)")]
         [Display(Name = "First Name")]
         public string FirstMidName { get; set; }
 
@@ -26,6 +26,7 @@ namespace ContosoUniversity.Models
         [Display(Name = "Enrollment Date")]
         public DateTime EnrollmentDate { get; set; }
 
+        [NotMapped]
         public string FullName
         {
             get
@@ -34,6 +35,6 @@ namespace ContosoUniversity.Models
             }
         }
 
-        public virtual ICollection<Enrollment> Enrollments { get; set; }
+        public ICollection<Enrollment> Enrollments { get; set; } = new List<Enrollment>();
     }
 }

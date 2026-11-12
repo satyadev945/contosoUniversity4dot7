@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using ContosoUniversity.Logging;
 using Microsoft.EntityFrameworkCore.Diagnostics;
+using Npgsql;
 
 namespace ContosoUniversity.DAL
 {
