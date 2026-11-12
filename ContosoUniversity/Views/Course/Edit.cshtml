@@ -1,4 +1,5 @@
-﻿@model ContosoUniversity.Models.Course
+@using Microsoft.AspNetCore.Mvc.Rendering
+@model ContosoUniversity.Models.Course
 
 @{
     ViewBag.Title = "Edit";
@@ -36,7 +37,7 @@
         <div class="form-group">
             @Html.LabelFor(model => model.DepartmentID, "DepartmentID", htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
-                @Html.DropDownList("DepartmentID", null, htmlAttributes: new { @class = "form-control" })
+                @Html.DropDownList("DepartmentID", (IEnumerable<SelectListItem>)ViewBag.DepartmentID, htmlAttributes: new { @class = "form-control" })
                 @Html.ValidationMessageFor(model => model.DepartmentID, "", new { @class = "text-danger" })
             </div>
         </div>
@@ -54,5 +55,5 @@
 </div>
 
 @section Scripts {
-    @Scripts.Render("~/bundles/jqueryval")
+    <partial name="_ValidationScriptsPartial" />
 }

@@ -1,49 +1,63 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Data.Entity;
-using System.Linq;
-using System.Net;
-using System.Web;
-using System.Web.Mvc;
-using ContosoUniversity.DAL;
+using ContosoUniversity.Data;
 using ContosoUniversity.Models;
 using ContosoUniversity.ViewModels;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
 
 namespace ContosoUniversity.Controllers
 {
     public class InstructorController : Controller
     {
-        private SchoolContext db = new SchoolContext();
+        private readonly SchoolContext _db;
+
+        public InstructorController(SchoolContext db)
+        {
+            _db = db;
+        }
 
         // GET: Instructor
-        public ActionResult Index(int? id, int? courseID)
+        public async Task<IActionResult> Index(int? id, int? courseID)
         {
             var viewModel = new InstructorIndexData();
-            viewModel.Instructors = db.Instructors
+            viewModel.Instructors = await _db.Instructors
                 .Include(i => i.OfficeAssignment)
-                .Include(i => i.Courses.Select(c => c.Department))
-                .OrderBy(i => i.LastName);
+                .Include(i => i.Courses)
+                    .ThenInclude(c => c.Department)
+                .OrderBy(i => i.LastName)
+                .ToListAsync();
 
             if (id != null)
             {
                 ViewBag.InstructorID = id.Value;
-                viewModel.Courses = viewModel.Instructors.Where(
-                    i => i.ID == id.Value).Single().Courses;
+                var selectedInstructor = viewModel.Instructors.SingleOrDefault(i => i.ID == id.Value);
+                if (selectedInstructor == null)
+                {
+                    return NotFound();
+                }
+                viewModel.Courses = selectedInstructor.Courses;
             }
 
             if (courseID != null)
             {
                 ViewBag.CourseID = courseID.Value;
-                // Lazy loading
-                //viewModel.Enrollments = viewModel.Courses.Where(
-                //    x => x.CourseID == courseID).Single().Enrollments;
-                // Explicit loading
-                var selectedCourse = viewModel.Courses.Where(x => x.CourseID == courseID).Single();
-                db.Entry(selectedCourse).Collection(x => x.Enrollments).Load();
+                if (viewModel.Courses == null)
+                {
+                    // A course was selected without an instructor: look it up across all instructors.
+                    viewModel.Courses = viewModel.Instructors.SelectMany(i => i.Courses).Distinct().ToList();
+                }
+
+                var selectedCourse = viewModel.Courses.SingleOrDefault(x => x.CourseID == courseID);
+                if (selectedCourse == null)
+                {
+                    return NotFound();
+                }
+
+                // Explicit loading of enrollments and their students.
+                await _db.Entry(selectedCourse).Collection(x => x.Enrollments).LoadAsync();
                 foreach (Enrollment enrollment in selectedCourse.Enrollments)
                 {
-                    db.Entry(enrollment).Reference(x => x.Student).Load();
+                    await _db.Entry(enrollment).Reference(x => x.Student).LoadAsync();
                 }
 
                 viewModel.Enrollments = selectedCourse.Enrollments;
@@ -53,89 +67,85 @@ namespace ContosoUniversity.Controllers
         }
 
         // GET: Instructor/Details/5
-        public ActionResult Details(int? id)
+        public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
             {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                return BadRequest();
             }
-            Instructor instructor = db.Instructors.Find(id);
+            Instructor instructor = await _db.Instructors.Include(i => i.OfficeAssignment).FirstOrDefaultAsync(i => i.ID == id);
             if (instructor == null)
             {
-                return HttpNotFound();
+                return NotFound();
             }
             return View(instructor);
         }
 
         // GET: Instructor/Create
-        public ActionResult Create()
+        public IActionResult Create()
         {
-            ViewBag.ID = new SelectList(db.OfficeAssignments, "InstructorID", "Location");
+            ViewBag.ID = new SelectList(_db.OfficeAssignments, "InstructorID", "Location");
             return View();
         }
 
         // POST: Instructor/Create
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "ID,LastName,FirstMidName,HireDate")] Instructor instructor)
+        public async Task<IActionResult> Create([Bind("ID,LastName,FirstMidName,HireDate")] Instructor instructor)
         {
             if (ModelState.IsValid)
             {
-                db.Instructors.Add(instructor);
-                db.SaveChanges();
-                return RedirectToAction("Index");
+                _db.Instructors.Add(instructor);
+                await _db.SaveChangesAsync();
+                return RedirectToAction(nameof(Index));
             }
 
-            ViewBag.ID = new SelectList(db.OfficeAssignments, "InstructorID", "Location", instructor.ID);
+            ViewBag.ID = new SelectList(_db.OfficeAssignments, "InstructorID", "Location", instructor.ID);
             return View(instructor);
         }
 
         // GET: Instructor/Edit/5
-        public ActionResult Edit(int? id)
+        public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
             {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                return BadRequest();
             }
-            Instructor instructor = db.Instructors.Find(id);
+            Instructor instructor = await _db.Instructors.FindAsync(id);
             if (instructor == null)
             {
-                return HttpNotFound();
+                return NotFound();
             }
-            ViewBag.ID = new SelectList(db.OfficeAssignments, "InstructorID", "Location", instructor.ID);
+            ViewBag.ID = new SelectList(_db.OfficeAssignments, "InstructorID", "Location", instructor.ID);
             return View(instructor);
         }
 
         // POST: Instructor/Edit/5
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "ID,LastName,FirstMidName,HireDate")] Instructor instructor)
+        public async Task<IActionResult> Edit([Bind("ID,LastName,FirstMidName,HireDate")] Instructor instructor)
         {
             if (ModelState.IsValid)
             {
-                db.Entry(instructor).State = EntityState.Modified;
-                db.SaveChanges();
-                return RedirectToAction("Index");
+                _db.Entry(instructor).State = EntityState.Modified;
+                await _db.SaveChangesAsync();
+                return RedirectToAction(nameof(Index));
             }
-            ViewBag.ID = new SelectList(db.OfficeAssignments, "InstructorID", "Location", instructor.ID);
+            ViewBag.ID = new SelectList(_db.OfficeAssignments, "InstructorID", "Location", instructor.ID);
             return View(instructor);
         }
 
         // GET: Instructor/Delete/5
-        public ActionResult Delete(int? id)
+        public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
             {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                return BadRequest();
             }
-            Instructor instructor = db.Instructors.Find(id);
+            Instructor instructor = await _db.Instructors.Include(i => i.OfficeAssignment).FirstOrDefaultAsync(i => i.ID == id);
             if (instructor == null)
             {
-                return HttpNotFound();
+                return NotFound();
             }
             return View(instructor);
         }
@@ -143,21 +153,15 @@ namespace ContosoUniversity.Controllers
         // POST: Instructor/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public ActionResult DeleteConfirmed(int id)
+        public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            Instructor instructor = db.Instructors.Find(id);
-            db.Instructors.Remove(instructor);
-            db.SaveChanges();
-            return RedirectToAction("Index");
-        }
-
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing)
+            Instructor instructor = await _db.Instructors.FindAsync(id);
+            if (instructor != null)
             {
-                db.Dispose();
+                _db.Instructors.Remove(instructor);
+                await _db.SaveChangesAsync();
             }
-            base.Dispose(disposing);
+            return RedirectToAction(nameof(Index));
         }
     }
 }
