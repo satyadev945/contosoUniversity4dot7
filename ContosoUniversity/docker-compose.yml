@@ -1,0 +1,32 @@
+# Application-only compose file. The SQL Server database is external and supplied via environment variables.
+# Run from this directory:  docker compose up --build
+# Provide the connection string, e.g.
+#   export CONNECTION_STRING="Server=host.docker.internal;Database=ContosoUniversity;User Id=sa;Password=<password>;TrustServerCertificate=True"
+services:
+  contosouniversity:
+    image: contosouniversity:latest
+    build:
+      context: ..
+      dockerfile: ContosoUniversity/Dockerfile
+    container_name: contosouniversity
+    ports:
+      - "8080:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_URLS=http://+:8080
+      - TZ=UTC
+      - ConnectionStrings__SchoolContext=${CONNECTION_STRING:-Server=host.docker.internal;Database=ContosoUniversity;User Id=sa;Password=ChangeMe;TrustServerCertificate=True}
+    healthcheck:
+      # The aspnet image has no curl/wget; probe the Kestrel TCP port with bash instead
+      test: ["CMD", "bash", "-c", "exec 3<>/dev/tcp/127.0.0.1/8080"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 40s
+    restart: unless-stopped
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
