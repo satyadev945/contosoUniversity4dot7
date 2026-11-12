@@ -37,7 +37,7 @@ namespace ContosoUniversity.Controllers
 
             ViewBag.CurrentFilter = searchString;
 
-            var students = from s in _db.Students
+            var students = from s in _db.Students.AsNoTracking()
                            select s;
 
             if (!string.IsNullOrEmpty(searchString))

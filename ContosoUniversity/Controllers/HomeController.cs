@@ -24,15 +24,17 @@ namespace ContosoUniversity.Controllers
 
         public async Task<IActionResult> About()
         {
-            IQueryable<EnrollmentDataGroup> data = from student in _db.Students
-                                                   group student by student.EnrollmentDate into dataGroup
-                                                   select new EnrollmentDataGroup()
-                                                   {
-                                                       EnrollmentDate = dataGroup.Key,
-                                                       StudentCount = dataGroup.Count()
-                                                   };
+            // EF Core GroupBy translated to PostgreSQL (no LINQ to SQL constructs)
+            var data = _db.Students.AsNoTracking()
+                .GroupBy(s => s.EnrollmentDate)
+                .Select(g => new EnrollmentDataGroup
+                {
+                    EnrollmentDate = g.Key,
+                    StudentCount = g.Count()
+                })
+                .OrderBy(x => x.EnrollmentDate);
 
-            return View(await data.AsNoTracking().ToListAsync());
+            return View(await data.ToListAsync());
         }
 
         public IActionResult Contact()

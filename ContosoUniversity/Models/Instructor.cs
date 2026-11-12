@@ -21,6 +21,7 @@ namespace ContosoUniversity.Models
         [DataType(DataType.Date)]
         [DisplayFormat(DataFormatString = "{0:dd-MM-yyyy}", ApplyFormatInEditMode = false)]
         [Display(Name = "Hire Date")]
+        [Column("HireDate", TypeName = "date")]
         public DateTime HireDate { get; set; }
 
         [Display(Name = "Full Name")]
@@ -29,6 +30,7 @@ namespace ContosoUniversity.Models
             get { return LastName + ", " + FirstMidName; }
         }
 
+        [InverseProperty("Instructors")]
         public ICollection<Course> Courses { get; set; } = new List<Course>();
         public OfficeAssignment? OfficeAssignment { get; set; }
     }

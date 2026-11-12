@@ -21,6 +21,7 @@ namespace ContosoUniversity.Models
         [DataType(DataType.Date)]
         [DisplayFormat(DataFormatString = "{0:dd-MM-yyyy}", ApplyFormatInEditMode = false)]
         [Display(Name = "Enrollment Date")]
+        [Column("EnrollmentDate", TypeName = "date")]
         public DateTime EnrollmentDate { get; set; }
 
         public string FullName
@@ -31,6 +32,7 @@ namespace ContosoUniversity.Models
             }
         }
 
+        [InverseProperty("Student")]
         public ICollection<Enrollment> Enrollments { get; set; } = new List<Enrollment>();
     }
 }

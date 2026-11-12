@@ -11,12 +11,13 @@ namespace ContosoUniversity.Models
         public string? Name { get; set; }
 
         [DataType(DataType.Currency)]
-        [Column(TypeName = "money")]
+        [Column(TypeName = "numeric(19,4)")]
         public decimal Budget { get; set; }
 
         [DataType(DataType.Date)]
         [DisplayFormat(DataFormatString = "{0:dd-MM-yyyy}", ApplyFormatInEditMode = false)]
         [Display(Name = "Start Date")]
+        [Column(TypeName = "date")]
         public DateTime StartDate { get; set; }
 
         public int? InstructorID { get; set; }

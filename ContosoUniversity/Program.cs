@@ -20,7 +20,7 @@ builder.Services.AddDbContext<SchoolContext>((serviceProvider, options) =>
     var connectionString = builder.Configuration.GetConnectionString("SchoolContext")
         ?? throw new InvalidOperationException("Connection string 'SchoolContext' not found.");
 
-    options.UseSqlServer(connectionString, sqlOptions => sqlOptions.EnableRetryOnFailure(maxRetryCount: 5))
+    options.UseNpgsql(connectionString, npgsqlOptions => npgsqlOptions.EnableRetryOnFailure(maxRetryCount: 5))
            .AddInterceptors(serviceProvider.GetRequiredService<SchoolInterceptorLogging>());
 });
 
