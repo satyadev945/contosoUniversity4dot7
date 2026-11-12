@@ -1,7 +1,7 @@
 ﻿@model ContosoUniversity.Models.Instructor
 
 @{
-    ViewBag.Title = "Create";
+    ViewBag.Title = ContosoUniversity.Security.HtmlSanitizerProvider.SanitizeText("Create");
 }
 
 <h2>Create</h2>
