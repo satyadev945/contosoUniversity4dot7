@@ -17,13 +17,13 @@ namespace ContosoUniversity.Models
 
         [Required]
         [StringLength(50, ErrorMessage = "First Name must be less than 50 Characters")]
-        [Column("FirstName")]
         [Display(Name = "First Name")]
         public string FirstMidName { get; set; }
 
         [DataType(DataType.Date)]
         [DisplayFormat(DataFormatString = "{0:dd-MM-yyyy}", ApplyFormatInEditMode = false)]
         [Display(Name = "Enrollment Date")]
+        [Column(TypeName = "date")]
         public DateTime EnrollmentDate { get; set; }
 
         public string FullName
@@ -34,6 +34,6 @@ namespace ContosoUniversity.Models
             }
         }
 
-        public virtual ICollection<Enrollment> Enrollments { get; set; }
+        public ICollection<Enrollment> Enrollments { get; set; }
     }
 }

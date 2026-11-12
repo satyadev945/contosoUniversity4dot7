@@ -10,12 +10,12 @@ using Microsoft.Extensions.Logging;
 var builder = WebApplication.CreateBuilder(args);
 
 // The connection string is supplied through configuration / environment variables,
-// e.g. ConnectionStrings__SchoolContext="Server=${DB_HOST};Database=${DB_NAME};User Id=${DB_USER};Password=${DB_PASSWORD};TrustServerCertificate=True"
+// e.g. ConnectionStrings__SchoolContext="Host=${DB_HOST};Port=5432;Database=${DB_NAME};Username=${DB_USER};Password=${DB_PASSWORD}"
 var connectionString = builder.Configuration.GetConnectionString("SchoolContext");
 
 builder.Services.AddControllersWithViews();
 builder.Services.AddDbContext<SchoolContext>(options =>
-    options.UseSqlServer(connectionString, sql => sql.EnableRetryOnFailure()));
+    options.UseNpgsql(connectionString, npgsql => npgsql.EnableRetryOnFailure()));
 
 // Health check endpoint used by container orchestrators (liveness/readiness probes)
 builder.Services.AddHealthChecks();

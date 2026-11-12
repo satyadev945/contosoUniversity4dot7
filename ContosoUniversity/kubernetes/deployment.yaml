@@ -40,7 +40,7 @@ spec:
               value: "http://+:8080"
             - name: TZ
               value: "UTC"
-            # SQL Server connection string; created by deploy-image.sh as a Kubernetes Secret
+            # PostgreSQL connection string; created by deploy-image.sh as a Kubernetes Secret
             - name: ConnectionStrings__SchoolContext
               valueFrom:
                 secretKeyRef:

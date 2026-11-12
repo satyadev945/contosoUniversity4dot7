@@ -26,6 +26,9 @@ namespace ContosoUniversity.DAL
             modelBuilder.Entity<Student>().ToTable("Student");
             modelBuilder.Entity<OfficeAssignment>().ToTable("OfficeAssignment");
 
+            modelBuilder.Entity<Student>().Property(s => s.FirstMidName).HasColumnName("FirstName");
+            modelBuilder.Entity<Instructor>().Property(i => i.FirstMidName).HasColumnName("FirstName");
+
             modelBuilder.Entity<Course>()
                 .HasMany(c => c.Instructors).WithMany(i => i.Courses)
                 .UsingEntity<System.Collections.Generic.Dictionary<string, object>>(

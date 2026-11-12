@@ -31,7 +31,7 @@ ENV ASPNETCORE_URLS=http://+:8080 \
     TZ=UTC
 
 # Supply at runtime, e.g.
-# ConnectionStrings__SchoolContext="Server=<host>;Database=ContosoUniversity;User Id=<user>;Password=<password>;TrustServerCertificate=True"
+# ConnectionStrings__SchoolContext="Host=<host>;Port=5432;Database=ContosoUniversity;Username=<user>;Password=<password>"
 EXPOSE 8080
 
 # Non-root user (built into the official .NET 8 images, UID 1654)

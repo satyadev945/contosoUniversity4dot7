@@ -1,7 +1,7 @@
-# Application-only compose file. The SQL Server database is external and supplied via environment variables.
+# Application-only compose file. The PostgreSQL database is external and supplied via environment variables.
 # Run from this directory:  docker compose up --build
 # Provide the connection string, e.g.
-#   export CONNECTION_STRING="Server=host.docker.internal;Database=ContosoUniversity;User Id=sa;Password=<password>;TrustServerCertificate=True"
+#   export CONNECTION_STRING="Host=host.docker.internal;Port=5432;Database=ContosoUniversity;Username=postgres;Password=<password>"
 services:
   contosouniversity:
     image: contosouniversity:latest
@@ -15,7 +15,7 @@ services:
       - ASPNETCORE_ENVIRONMENT=Production
       - ASPNETCORE_URLS=http://+:8080
       - TZ=UTC
-      - ConnectionStrings__SchoolContext=${CONNECTION_STRING:-Server=host.docker.internal;Database=ContosoUniversity;User Id=sa;Password=ChangeMe;TrustServerCertificate=True}
+      - ConnectionStrings__SchoolContext=${CONNECTION_STRING:-Host=host.docker.internal;Port=5432;Database=ContosoUniversity;Username=postgres;Password=ChangeMe}
     healthcheck:
       # The aspnet image has no curl/wget; probe the Kestrel TCP port with bash instead
       test: ["CMD", "bash", "-c", "exec 3<>/dev/tcp/127.0.0.1/8080"]
