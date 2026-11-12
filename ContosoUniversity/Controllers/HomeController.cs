@@ -25,13 +25,14 @@ namespace ContosoUniversity.Controllers
 
         public async Task<IActionResult> About()
         {
-            List<EnrollmentDataGroup> data = await _db.Students
+            List<EnrollmentDataGroup> data = await _db.Students.AsNoTracking()
                 .GroupBy(student => student.EnrollmentDate)
                 .Select(dataGroup => new EnrollmentDataGroup
                 {
                     EnrollmentDate = dataGroup.Key,
                     StudentCount = dataGroup.Count()
                 })
+                .OrderBy(g => g.EnrollmentDate)
                 .ToListAsync();
 
             return View(data);

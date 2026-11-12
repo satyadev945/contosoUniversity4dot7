@@ -24,6 +24,7 @@ namespace ContosoUniversity.Models
         [DataType(DataType.Date)]
         [DisplayFormat(DataFormatString = "{0:dd-MM-yyyy}", ApplyFormatInEditMode = false)]
         [Display(Name = "Enrollment Date")]
+        [Column("EnrollmentDate", TypeName = "date")]
         public DateTime EnrollmentDate { get; set; }
 
         public string FullName
@@ -34,6 +35,6 @@ namespace ContosoUniversity.Models
             }
         }
 
-        public virtual ICollection<Enrollment> Enrollments { get; set; }
+        public ICollection<Enrollment> Enrollments { get; set; }
     }
 }
