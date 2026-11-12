@@ -1,4 +1,4 @@
-﻿@model IEnumerable<ContosoUniversity.Models.Course>
+@model IEnumerable<ContosoUniversity.Models.Course>
 
 @{
     ViewBag.Title = "Courses";
@@ -8,7 +8,7 @@
 <br />
 
 <p>
-    <button class="btn btn-primary" onClick="location.href =' @Url.Action("Create", "Course")';return false;">Create New</button>
+    <a class="btn btn-primary" asp-controller="Course" asp-action="Create">Create New</a>
    
 </p>
 <br />
@@ -41,15 +41,12 @@
             @Html.DisplayFor(modelItem => item.Credits)
         </td>
         <td>
-            @Html.DisplayFor(modelItem => item.Department.Name)
+            @Html.DisplayFor(modelItem => item.Department!.Name)
         </td>
         <td>
-            <button class="btn btn-warning" onClick="location.href =' @Url.Action("Edit", "Course", new { id = item.CourseID })';return false;">Edit</button>
-            <button class="btn btn-info" onClick="location.href =' @Url.Action("Details", "Course", new { id = item.CourseID  })';return false;">Details</button>
-            <button class="btn btn-danger" onClick="location.href =' @Url.Action("Delete", "Course", new { id = item.CourseID  })';return false;">Delete</button>
-            @*@Html.ActionLink("Edit", "Edit", new { id=item.CourseID }) |
-            @Html.ActionLink("Details", "Details", new { id=item.CourseID }) |
-            @Html.ActionLink("Delete", "Delete", new { id=item.CourseID })*@
+            <a class="btn btn-warning" asp-controller="Course" asp-action="Edit" asp-route-id="@item.CourseID">Edit</a>
+            <a class="btn btn-info" asp-controller="Course" asp-action="Details" asp-route-id="@item.CourseID">Details</a>
+            <a class="btn btn-danger" asp-controller="Course" asp-action="Delete" asp-route-id="@item.CourseID">Delete</a>
         </td>
     </tr>
 }

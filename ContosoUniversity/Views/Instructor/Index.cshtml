@@ -1,4 +1,4 @@
-﻿@model ContosoUniversity.ViewModels.InstructorIndexData
+@model ContosoUniversity.ViewModels.InstructorIndexData
 
 @{
     ViewBag.Title = "Instructors";
@@ -8,7 +8,7 @@
 <br/>
 
 <p>
-    <button class="btn btn-primary" onClick="location.href =' @Url.Action("Create", "Instructor")';return false;">Create New</button>
+    <a class="btn btn-primary" asp-controller="Instructor" asp-action="Create">Create New</a>
    
 </p>
 <br />
@@ -45,14 +45,10 @@
                 }
             </td>
             <td>
-                <button class="btn " onClick="location.href =' @Url.Action("Index", "Instructor", new { id = item.ID })';return false;">Select</button>
-                <button class="btn btn-warning" onClick="location.href =' @Url.Action("Edit", "Instructor", new { id = item.ID })';return false;">Edit</button>
-                <button class="btn btn-info" onClick="location.href =' @Url.Action("Details", "Instructor", new { id = item.ID  })';return false;">Details</button>
-                <button class="btn btn-danger" onClick="location.href =' @Url.Action("Delete", "Instructor", new { id = item.ID  })';return false;">Delete</button>
-                @*@Html.ActionLink("Select", "Index", new { id = item.ID }) |
-                @Html.ActionLink("Edit", "Edit", new { id = item.ID }) |
-                @Html.ActionLink("Details", "Details", new { id = item.ID }) |
-                @Html.ActionLink("Delete", "Delete", new { id = item.ID })*@
+                <a class="btn" asp-controller="Instructor" asp-action="Index" asp-route-id="@item.ID">Select</a>
+                <a class="btn btn-warning" asp-controller="Instructor" asp-action="Edit" asp-route-id="@item.ID">Edit</a>
+                <a class="btn btn-info" asp-controller="Instructor" asp-action="Details" asp-route-id="@item.ID">Details</a>
+                <a class="btn btn-danger" asp-controller="Instructor" asp-action="Delete" asp-route-id="@item.ID">Delete</a>
             </td>
         </tr>
     }
@@ -79,8 +75,7 @@
             }
             <tr class="@selectedRow">
                 <td>
-                    <button class="btn " onClick="location.href =' @Url.Action("Index", "Instructor", new { courseId = item.CourseID })';return false;">Select</button>
-                    @*@Html.ActionLink("Select", "Index", new { courseID = item.CourseID })*@
+                    <a class="btn" asp-controller="Instructor" asp-action="Index" asp-route-id="@ViewBag.InstructorID" asp-route-courseID="@item.CourseID">Select</a>
                 </td>
                 <td>
                     @item.CourseID
@@ -89,7 +84,7 @@
                     @item.Title
                 </td>
                 <td>
-                    @item.Department.Name
+                    @item.Department!.Name
                 </td>
             </tr>
         }
@@ -109,7 +104,7 @@
             {
                 <tr>
                     <td>
-                        @item.Student.FullName
+                        @item.Student!.FullName
                     </td>
                     <td>
                         @Html.DisplayFor(modelItem => item.Grade)
