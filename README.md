@@ -1,8 +1,8 @@
 ﻿# University Admin Website 
 
-## Asp.net MVC 5 with Entity Framework
+## ASP.NET Core 8 MVC with Entity Framework Core (Linux container ready)
 
-Full CRUD operation ASP.NET MVC 5 framework intergrated with Entity Framework 6 SQL database. 
+Full CRUD operation ASP.NET Core MVC integrated with Entity Framework Core and SQL Server. Configure the database via the `ConnectionStrings__SchoolContext` environment variable; a health check is exposed at `/health`. 
 Add edit update and delete 
 > Students 
 >
