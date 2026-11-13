@@ -1,0 +1,42 @@
+# Build output and temp artifacts
+**/bin/
+**/obj/
+**/out/
+**/publish/
+**/TestResults/
+**/*.pdb
+**/*.log
+**/*.tmp
+**/*.cache
+
+# IDE / user files
+.vs/
+.vscode/
+.idea/
+**/*.user
+**/*.suo
+**/*.userosscache
+**/*.sln.docstates
+
+# Source control
+.git/
+.gitignore
+.gitattributes
+
+# Docker files
+**/Dockerfile*
+**/.dockerignore
+**/docker-compose*
+
+# Packages and docs not needed at runtime
+packages/
+node_modules/
+images/
+README.md
+*.md
+
+# Local secrets / environment
+**/.env
+**/secrets.json
+**/appsettings.Development.json
+**/launchSettings.json

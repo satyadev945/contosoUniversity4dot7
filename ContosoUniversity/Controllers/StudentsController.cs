@@ -1,24 +1,29 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Entity;
 using System.Linq;
-using System.Net;
-using System.Web;
-using System.Web.Mvc;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using ContosoUniversity.DAL;
 using ContosoUniversity.Models;
-using PagedList;
+using X.PagedList;
 using System.Data.Entity.Infrastructure;
 
 namespace ContosoUniversity.Controllers
 {
     public class StudentsController : Controller
     {
-        private SchoolContext db = new SchoolContext();
+        private readonly SchoolContext db;
+
+        public StudentsController(SchoolContext context)
+        {
+            db = context;
+        }
 
         // GET: Students
-        public ActionResult Index(string sortOrder, string currentFilter,  string searchString, int? page)
+        public IActionResult Index(string sortOrder, string currentFilter,  string searchString, int? page)
         {
             ViewBag.Currentsort = sortOrder;
             ViewBag.NameSortParm = String.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
@@ -66,22 +71,23 @@ namespace ContosoUniversity.Controllers
         }
 
         // GET: Students/Details/5
-        public ActionResult Details(int? id)
+        public IActionResult Details(int? id)
         {
             if (id == null)
             {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                return BadRequest();
             }
             Student student = db.Students.Find(id);
             if (student == null)
             {
-                return HttpNotFound();
+                return NotFound();
             }
             return View(student);
         }
 
         // GET: Students/Create
-        public ActionResult Create()
+        [HttpGet]
+        public IActionResult Create()
         {
             return View();
         }
@@ -91,7 +97,7 @@ namespace ContosoUniversity.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "LastName,FirstMidName,EnrollmentDate")] Student student)
+        public IActionResult Create([Bind("LastName,FirstMidName,EnrollmentDate")] Student student)
         {
             try
             {
@@ -113,16 +119,17 @@ namespace ContosoUniversity.Controllers
         }
 
         // GET: Students/Edit/5
-        public ActionResult Edit(int? id)
+        [HttpGet]
+        public IActionResult Edit(int? id)
         {
             if (id == null)
             {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                return BadRequest();
             }
             Student student = db.Students.Find(id);
             if (student == null)
             {
-                return HttpNotFound();
+                return NotFound();
             }
             return View(student);
         }
@@ -132,15 +139,15 @@ namespace ContosoUniversity.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost, ActionName("Edit")]
         [ValidateAntiForgeryToken]
-        public ActionResult EditPost(int? id)
+        public async Task<IActionResult> EditPost(int? id)
         {
             if (id == null)
             {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                return BadRequest();
             }
             var studentToUpdate = db.Students.Find(id);
-            if (TryUpdateModel(studentToUpdate, "",
-               new string[] { "LastName", "FirstMidName", "EnrollmentDate" }))
+            if (await TryUpdateModelAsync<Student>(studentToUpdate, "",
+               s => s.LastName, s => s.FirstMidName, s => s.EnrollmentDate))
             {
                 try
                 {
@@ -158,11 +165,12 @@ namespace ContosoUniversity.Controllers
         }
 
         // GET: Students/Delete/5
-        public ActionResult Delete(int? id, bool? saveChangesError = false)
+        [HttpGet]
+        public IActionResult Delete(int? id, bool? saveChangesError = false)
         {
             if (id == null)
             {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                return BadRequest();
             }
             if (saveChangesError.GetValueOrDefault())
             {
@@ -171,7 +179,7 @@ namespace ContosoUniversity.Controllers
             Student student = db.Students.Find(id);
             if (student == null)
             {
-                return HttpNotFound();
+                return NotFound();
             }
             return View(student);
         }
@@ -179,7 +187,7 @@ namespace ContosoUniversity.Controllers
         // POST: Students/Delete/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id)
+        public IActionResult Delete(int id)
         {
             try
             {
@@ -195,18 +203,6 @@ namespace ContosoUniversity.Controllers
             return RedirectToAction("Index");
 
 
-        }
-
-
-
-
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                db.Dispose();
-            }
-            base.Dispose(disposing);
         }
     }
 }
