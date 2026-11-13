@@ -223,11 +223,14 @@ if (!jQuery) { throw new Error("Bootstrap requires jQuery") }
     $el[val](data[state] || this.options[state])
 
     // push to event loop to allow forms to submit
-    setTimeout(function () {
+    var nextTick = function () {
+      return new Promise(function (resolve) { setTimeout(resolve, 0) })
+    }
+    nextTick().then(function () {
       state == 'loadingText' ?
         $el.addClass(d).attr(d, d) :
         $el.removeClass(d).removeAttr(d);
-    }, 0)
+    })
   }
 
   Button.prototype.toggle = function () {
