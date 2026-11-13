@@ -17,23 +17,26 @@
 **/*.suo
 **/*.userosscache
 **/*.sln.docstates
+.DS_Store
 
 # Source control
 .git/
 .gitignore
 .gitattributes
 
-# Docker files
+# Docker, deployment files and docs not needed in build context
 **/Dockerfile*
 **/.dockerignore
 **/docker-compose*
+kubernetes/
+scripts/
+docs/
+*.md
 
-# Packages and docs not needed at runtime
+# Packages and misc
 packages/
 node_modules/
 images/
-README.md
-*.md
 
 # Local secrets / environment
 **/.env
