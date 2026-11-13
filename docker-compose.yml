@@ -11,9 +11,7 @@ services:
       - ASPNETCORE_ENVIRONMENT=Production
       - ASPNETCORE_URLS=http://+:8080
       - TZ=UTC
-      # External SQL Server connection (provided separately), e.g.
-      # Server=host,1433;Database=School;User Id=sa;Password=...;TrustServerCertificate=True
-      - ConnectionStrings__SchoolContext=${DB_CONNECTION_STRING:?Set DB_CONNECTION_STRING}
+      - ConnectionStrings__SchoolContext=Host=db;Port=5432;Database=${POSTGRES_DB:-school};Username=${POSTGRES_USER:-postgres};Password=${POSTGRES_PASSWORD:-postgres}
       - APPLICATIONINSIGHTS_CONNECTION_STRING=${APPLICATIONINSIGHTS_CONNECTION_STRING:-}
     volumes:
       - ./ContosoUniversity/appsettings.json:/app/appsettings.json:ro
@@ -24,8 +22,32 @@ services:
       retries: 3
       start_period: 40s
     restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
     networks:
       - app-network
+
+  db:
+    image: postgres:15
+    container_name: contosouniversity-db
+    environment:
+      - POSTGRES_DB=${POSTGRES_DB:-school}
+      - POSTGRES_USER=${POSTGRES_USER:-postgres}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-postgres}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER:-postgres}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+    networks:
+      - app-network
+
+volumes:
+  pgdata:
 
 networks:
   app-network:

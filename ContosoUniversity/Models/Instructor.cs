@@ -15,7 +15,7 @@ namespace ContosoUniversity.Models
         public string LastName { get; set; }
 
         [Required]
-        [Column("FirstName")]
+        [Column("FirstName", TypeName = "varchar(50)")]
         [Display(Name = "First Name")]
         [StringLength(50)]
         public string FirstMidName { get; set; }
