@@ -1,7 +1,7 @@
 ﻿@model ContosoUniversity.ViewModels.InstructorIndexData
 
 @{
-    ViewBag.Title = "Instructors";
+    ViewBag.Title = ContosoUniversity.Security.HtmlSanitizerService.Sanitize("Instructors");
 }
 
 <h2>Instructors</h2>
