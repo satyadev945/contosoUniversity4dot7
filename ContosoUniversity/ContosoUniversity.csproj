@@ -275,6 +275,8 @@
     <Content Include="Views\Instructor\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="Npgsql" Version="6.0.0" />
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="6.0.0" />
     <Folder Include="App_Data\" />
   </ItemGroup>
   <ItemGroup>

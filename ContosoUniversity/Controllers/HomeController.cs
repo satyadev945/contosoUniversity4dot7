@@ -18,6 +18,7 @@ namespace ContosoUniversity.Controllers
 
         public Task<ActionResult> Index()
         {
+            // Data access uses EF Include/FromSqlRaw; no LINQ to SQL constructs
             return Task.FromResult<ActionResult>(View());
         }
 
