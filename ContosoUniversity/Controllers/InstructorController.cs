@@ -1,50 +1,59 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Data.Entity;
-using System.Linq;
-using System.Net;
-using System.Web;
-using System.Web.Mvc;
 using ContosoUniversity.DAL;
 using ContosoUniversity.Models;
 using ContosoUniversity.ViewModels;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
 
 namespace ContosoUniversity.Controllers
 {
     public class InstructorController : Controller
     {
-        private SchoolContext db = new SchoolContext();
+        private readonly SchoolContext _db;
+        private readonly ILogger<InstructorController> _logger;
+
+        public InstructorController(SchoolContext db, ILogger<InstructorController> logger)
+        {
+            _db = db;
+            _logger = logger;
+        }
 
         // GET: Instructor
-        public ActionResult Index(int? id, int? courseID)
+        public async Task<IActionResult> Index(int? id, int? courseID)
         {
             var viewModel = new InstructorIndexData();
-            viewModel.Instructors = db.Instructors
+            var instructors = await _db.Instructors
                 .Include(i => i.OfficeAssignment)
-                .Include(i => i.Courses.Select(c => c.Department))
-                .OrderBy(i => i.LastName);
+                .Include(i => i.Courses)
+                    .ThenInclude(c => c.Department)
+                .OrderBy(i => i.LastName)
+                .ToListAsync();
+            viewModel.Instructors = instructors;
 
             if (id != null)
             {
                 ViewBag.InstructorID = id.Value;
-                viewModel.Courses = viewModel.Instructors.Where(
-                    i => i.ID == id.Value).Single().Courses;
+                var selectedInstructor = instructors.SingleOrDefault(i => i.ID == id.Value);
+                if (selectedInstructor == null)
+                {
+                    return NotFound();
+                }
+                viewModel.Courses = selectedInstructor.Courses;
             }
 
-            if (courseID != null)
+            if (courseID != null && viewModel.Courses != null)
             {
                 ViewBag.CourseID = courseID.Value;
-                // Lazy loading
-                //viewModel.Enrollments = viewModel.Courses.Where(
-                //    x => x.CourseID == courseID).Single().Enrollments;
-                // Explicit loading
-                var selectedCourse = viewModel.Courses.Where(x => x.CourseID == courseID).Single();
-                db.Entry(selectedCourse).Collection(x => x.Enrollments).Load();
-                foreach (Enrollment enrollment in selectedCourse.Enrollments)
+                var selectedCourse = viewModel.Courses.SingleOrDefault(x => x.CourseID == courseID);
+                if (selectedCourse == null)
                 {
-                    db.Entry(enrollment).Reference(x => x.Student).Load();
+                    return NotFound();
                 }
+
+                // Explicit loading of enrollments and their students.
+                await _db.Entry(selectedCourse).Collection(x => x.Enrollments).Query()
+                    .Include(e => e.Student)
+                    .LoadAsync();
 
                 viewModel.Enrollments = selectedCourse.Enrollments;
             }
@@ -53,89 +62,107 @@ namespace ContosoUniversity.Controllers
         }
 
         // GET: Instructor/Details/5
-        public ActionResult Details(int? id)
+        public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
             {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                return BadRequest();
             }
-            Instructor instructor = db.Instructors.Find(id);
+            var instructor = await _db.Instructors
+                .Include(i => i.OfficeAssignment)
+                .AsNoTracking()
+                .FirstOrDefaultAsync(i => i.ID == id);
             if (instructor == null)
             {
-                return HttpNotFound();
+                return NotFound();
             }
             return View(instructor);
         }
 
         // GET: Instructor/Create
-        public ActionResult Create()
+        public async Task<IActionResult> Create()
         {
-            ViewBag.ID = new SelectList(db.OfficeAssignments, "InstructorID", "Location");
+            await PopulateOfficeAssignmentsAsync();
             return View();
         }
 
         // POST: Instructor/Create
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "ID,LastName,FirstMidName,HireDate")] Instructor instructor)
+        public async Task<IActionResult> Create([Bind("ID,LastName,FirstMidName,HireDate")] Instructor instructor)
         {
             if (ModelState.IsValid)
             {
-                db.Instructors.Add(instructor);
-                db.SaveChanges();
-                return RedirectToAction("Index");
+                try
+                {
+                    _db.Instructors.Add(instructor);
+                    await _db.SaveChangesAsync();
+                    return RedirectToAction(nameof(Index));
+                }
+                catch (DbUpdateException ex)
+                {
+                    _logger.LogError(ex, "Unable to create instructor.");
+                    ModelState.AddModelError("", "Unable to save changes. Try again, and if the problem persists see your system administrator.");
+                }
             }
 
-            ViewBag.ID = new SelectList(db.OfficeAssignments, "InstructorID", "Location", instructor.ID);
+            await PopulateOfficeAssignmentsAsync(instructor.ID);
             return View(instructor);
         }
 
         // GET: Instructor/Edit/5
-        public ActionResult Edit(int? id)
+        public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
             {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                return BadRequest();
             }
-            Instructor instructor = db.Instructors.Find(id);
+            var instructor = await _db.Instructors.FindAsync(id);
             if (instructor == null)
             {
-                return HttpNotFound();
+                return NotFound();
             }
-            ViewBag.ID = new SelectList(db.OfficeAssignments, "InstructorID", "Location", instructor.ID);
+            await PopulateOfficeAssignmentsAsync(instructor.ID);
             return View(instructor);
         }
 
         // POST: Instructor/Edit/5
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "ID,LastName,FirstMidName,HireDate")] Instructor instructor)
+        public async Task<IActionResult> Edit([Bind("ID,LastName,FirstMidName,HireDate")] Instructor instructor)
         {
             if (ModelState.IsValid)
             {
-                db.Entry(instructor).State = EntityState.Modified;
-                db.SaveChanges();
-                return RedirectToAction("Index");
+                try
+                {
+                    _db.Entry(instructor).State = EntityState.Modified;
+                    await _db.SaveChangesAsync();
+                    return RedirectToAction(nameof(Index));
+                }
+                catch (DbUpdateException ex)
+                {
+                    _logger.LogError(ex, "Unable to update instructor {ID}.", instructor.ID);
+                    ModelState.AddModelError("", "Unable to save changes. Try again, and if the problem persists see your system administrator.");
+                }
             }
-            ViewBag.ID = new SelectList(db.OfficeAssignments, "InstructorID", "Location", instructor.ID);
+            await PopulateOfficeAssignmentsAsync(instructor.ID);
             return View(instructor);
         }
 
         // GET: Instructor/Delete/5
-        public ActionResult Delete(int? id)
+        public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
             {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                return BadRequest();
             }
-            Instructor instructor = db.Instructors.Find(id);
+            var instructor = await _db.Instructors
+                .Include(i => i.OfficeAssignment)
+                .AsNoTracking()
+                .FirstOrDefaultAsync(i => i.ID == id);
             if (instructor == null)
             {
-                return HttpNotFound();
+                return NotFound();
             }
             return View(instructor);
         }
@@ -143,21 +170,22 @@ namespace ContosoUniversity.Controllers
         // POST: Instructor/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public ActionResult DeleteConfirmed(int id)
+        public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            Instructor instructor = db.Instructors.Find(id);
-            db.Instructors.Remove(instructor);
-            db.SaveChanges();
-            return RedirectToAction("Index");
+            var instructor = await _db.Instructors.FindAsync(id);
+            if (instructor == null)
+            {
+                return NotFound();
+            }
+            _db.Instructors.Remove(instructor);
+            await _db.SaveChangesAsync();
+            return RedirectToAction(nameof(Index));
         }
 
-        protected override void Dispose(bool disposing)
+        private async Task PopulateOfficeAssignmentsAsync(object selected = null)
         {
-            if (disposing)
-            {
-                db.Dispose();
-            }
-            base.Dispose(disposing);
+            var offices = await _db.OfficeAssignments.AsNoTracking().ToListAsync();
+            ViewBag.ID = new SelectList(offices, "InstructorID", "Location", selected);
         }
     }
 }
