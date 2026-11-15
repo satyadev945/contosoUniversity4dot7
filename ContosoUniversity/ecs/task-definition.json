@@ -1,0 +1,38 @@
+{
+  "family": "contosouniversity-task",
+  "networkMode": "awsvpc",
+  "requiresCompatibilities": ["FARGATE"],
+  "cpu": "512",
+  "memory": "1024",
+  "executionRoleArn": "arn:aws:iam::{{ACCOUNT_ID}}:role/ecsTaskExecutionRole",
+  "containerDefinitions": [
+    {
+      "name": "contosouniversity",
+      "image": "{{IMAGE_URI}}",
+      "essential": true,
+      "portMappings": [
+        { "containerPort": 8080, "protocol": "tcp" }
+      ],
+      "environment": [
+        { "name": "ASPNETCORE_ENVIRONMENT", "value": "Production" },
+        { "name": "ASPNETCORE_URLS", "value": "http://+:8080" },
+        { "name": "DB_INITIALIZE", "value": "false" }
+      ],
+      "secrets": [
+        {
+          "name": "ConnectionStrings__SchoolContext",
+          "valueFrom": "{{DB_SECRET_ARN}}"
+        }
+      ],
+      "stopTimeout": 30,
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "/ecs/contosouniversity",
+          "awslogs-region": "{{AWS_REGION}}",
+          "awslogs-stream-prefix": "ecs"
+        }
+      }
+    }
+  ]
+}

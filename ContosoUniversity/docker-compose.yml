@@ -1,0 +1,32 @@
+services:
+  dotnet-app:
+    image: contosouniversity:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: contosouniversity
+    ports:
+      - "8080:8080"
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+      ASPNETCORE_URLS: http://+:8080
+      # External SQL Server connection (database is NOT part of this compose file)
+      ConnectionStrings__SchoolContext: "${SCHOOL_DB_CONNECTION_STRING:-Server=host.docker.internal,1433;Database=ContosoUniversity;User Id=sa;Password=change-me;TrustServerCertificate=True;}"
+      DB_INITIALIZE: "${DB_INITIALIZE:-false}"
+      Logging__LogLevel__Default: Information
+    volumes:
+      - ./logs:/app/logs
+    healthcheck:
+      # The aspnet image has no curl/wget, so use a bash TCP probe against the Kestrel port
+      test: ["CMD-SHELL", "bash -c 'exec 3<>/dev/tcp/127.0.0.1/8080'"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 40s
+    restart: unless-stopped
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
