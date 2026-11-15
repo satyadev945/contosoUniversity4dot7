@@ -45,6 +45,10 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Configuration.AzureAppConfiguration" Version="7.0.0" />
+    <PackageReference Include="Azure.Identity" Version="1.10.4" />
+  </ItemGroup>
+  <ItemGroup>
     <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
       <HintPath>..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.dll</HintPath>
     </Reference>
@@ -55,6 +59,15 @@
       <HintPath>..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.1.0.3\lib\net45\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
+    <Reference Include="AngleSharp, Version=0.16.1.0, Culture=neutral, PublicKeyToken=e83494dcdc6d31ea, processorArchitecture=MSIL">
+      <HintPath>packages\AngleSharp.0.16.1\lib\net461\AngleSharp.dll</HintPath>
+    </Reference>
+    <Reference Include="AngleSharp.Css, Version=0.16.4.0, Culture=neutral, PublicKeyToken=e83494dcdc6d31ea, processorArchitecture=MSIL">
+      <HintPath>packages\AngleSharp.Css.0.16.4\lib\net461\AngleSharp.Css.dll</HintPath>
+    </Reference>
+    <Reference Include="HtmlSanitizer, Version=5.0.0.0, Culture=neutral, PublicKeyToken=61c49a1a9e79cc28, processorArchitecture=MSIL">
+      <HintPath>packages\HtmlSanitizer.5.0.376\lib\net46\HtmlSanitizer.dll</HintPath>
+    </Reference>
     <Reference Include="PagedList, Version=1.17.0.0, Culture=neutral, PublicKeyToken=abbb863e9397c5e1, processorArchitecture=MSIL">
       <HintPath>..\packages\PagedList.1.17.0.0\lib\net40\PagedList.dll</HintPath>
     </Reference>
@@ -163,7 +176,6 @@
     <Compile Include="DAL\SchoolInterceptorLogging.cs" />
     <Compile Include="DAL\SchoolInterceptorTransientErrors.cs" />
     <Compile Include="Global.asax.cs">
-      <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Logging\ILogger.cs" />
     <Compile Include="Logging\Logger.cs" />
@@ -199,6 +211,8 @@
     <Compile Include="Models\OfficeAssignment.cs" />
     <Compile Include="Models\Student.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Security\ContentSecurityPolicyModule.cs" />
+    <Compile Include="Security\HtmlSanitizerProvider.cs" />
     <Compile Include="ViewModels\EnrollmentDataGroup.cs" />
     <Compile Include="ViewModels\InstructorIndexData.cs" />
   </ItemGroup>
@@ -208,7 +222,6 @@
     <Content Include="Content\PagedList.css" />
     <Content Include="favicon.ico" />
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
-    <Content Include="Global.asax" />
     <Content Include="Content\Site.css" />
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
@@ -228,12 +241,9 @@
     <Content Include="Scripts\respond.js" />
     <Content Include="Scripts\respond.min.js" />
     <Content Include="Web.config" />
-    <Content Include="Web.Debug.config">
-      <DependentUpon>Web.config</DependentUpon>
-    </Content>
-    <Content Include="Web.Release.config">
-      <DependentUpon>Web.config</DependentUpon>
-    </Content>
+    <Content Include="appsettings.json" />
+    <Content Include="appsettings.Development.json" />
+    <Content Include="appsettings.Production.json" />
     <Content Include="Views\Web.config" />
     <Content Include="Views\_ViewStart.cshtml" />
     <Content Include="Views\Shared\Error.cshtml" />

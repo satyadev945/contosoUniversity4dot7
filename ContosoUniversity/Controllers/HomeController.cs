@@ -2,7 +2,9 @@
 using ContosoUniversity.ViewModels;
 using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
 
@@ -18,7 +20,7 @@ namespace ContosoUniversity.Controllers
             return View();
         }
 
-        public ActionResult About()
+        public async Task<ActionResult> About()
         {
             IQueryable<EnrollmentDataGroup> data = from student in db.Students
                                                    group student by student.EnrollmentDate into dataGroup
@@ -28,7 +30,7 @@ namespace ContosoUniversity.Controllers
                                                        StudentCount = dataGroup.Count()
                                                    };
 
-            return View(data.ToList());
+            return View(await data.ToListAsync());
         }
 
         public ActionResult Contact()
