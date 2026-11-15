@@ -11,13 +11,13 @@ services:
       ASPNETCORE_ENVIRONMENT: Production
       ASPNETCORE_URLS: http://+:8080
       TZ: UTC
-      # External SQL Server connection (provided separately - not part of this compose file)
-      DB_HOST: ${DB_HOST:-host.docker.internal}
-      DB_NAME: ${DB_NAME:-ContosoUniversity}
-      DB_USER: ${DB_USER:-sa}
-      DB_PASSWORD: ${DB_PASSWORD:-}
+      # PostgreSQL connection
+      DB_HOST: ${DB_HOST:-postgres}
+      DB_NAME: ${POSTGRES_DB:-ContosoUniversity}
+      DB_USER: ${POSTGRES_USER:-postgres}
+      DB_PASSWORD: ${POSTGRES_PASSWORD:-}
       # Alternatively supply a full connection string (takes precedence):
-      # ConnectionStrings__SchoolContext: "Server=...;Database=...;User Id=...;Password=...;TrustServerCertificate=True"
+      # ConnectionStrings__SchoolContext: "Host=...;Port=5432;Database=...;Username=...;Password=..."
       APPLICATIONINSIGHTS_CONNECTION_STRING: ${APPLICATIONINSIGHTS_CONNECTION_STRING:-}
     extra_hosts:
       - "host.docker.internal:host-gateway"
@@ -29,8 +29,31 @@ services:
       retries: 3
       start_period: 60s
     restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
     networks:
       - app-network
+
+  postgres:
+    image: postgres:15
+    container_name: contosouniversity-db
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-ContosoUniversity}
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-}
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    networks:
+      - app-network
+
+volumes:
+  postgres-data:
 
 networks:
   app-network:

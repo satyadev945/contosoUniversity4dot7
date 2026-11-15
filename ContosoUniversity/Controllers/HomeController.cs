@@ -22,13 +22,14 @@ namespace ContosoUniversity.Controllers
 
         public IActionResult About()
         {
-            var data = (from student in db.Students
-                        group student by student.EnrollmentDate into dataGroup
-                        select new EnrollmentDataGroup()
-                        {
-                            EnrollmentDate = dataGroup.Key,
-                            StudentCount = dataGroup.Count()
-                        }).ToList();
+            var data = db.Students
+                .AsNoTracking()
+                .GroupBy(student => student.EnrollmentDate)
+                .Select(dataGroup => new EnrollmentDataGroup()
+                {
+                    EnrollmentDate = dataGroup.Key,
+                    StudentCount = dataGroup.Count()
+                }).ToList();
 
             return View(data);
         }

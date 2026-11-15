@@ -15,13 +15,13 @@ if (string.IsNullOrWhiteSpace(connectionString))
 {
     var host = Environment.GetEnvironmentVariable("DB_HOST") ?? "localhost";
     var name = Environment.GetEnvironmentVariable("DB_NAME") ?? "ContosoUniversity";
-    var user = Environment.GetEnvironmentVariable("DB_USER") ?? "sa";
+    var user = Environment.GetEnvironmentVariable("DB_USER") ?? "postgres";
     var password = Environment.GetEnvironmentVariable("DB_PASSWORD") ?? string.Empty;
-    connectionString = $"Server={host};Database={name};User Id={user};Password={password};TrustServerCertificate=True;MultipleActiveResultSets=True";
+    connectionString = $"Host={host};Port=5432;Database={name};Username={user};Password={password}";
 }
 
 builder.Services.AddDbContext<SchoolContext>(options =>
-    options.UseSqlServer(connectionString, sql => sql.EnableRetryOnFailure()));
+    options.UseNpgsql(connectionString, sql => sql.EnableRetryOnFailure()));
 
 builder.Services.AddApplicationInsightsTelemetry();
 builder.Services.AddControllersWithViews();
