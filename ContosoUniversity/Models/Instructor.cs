@@ -1,5 +1,3 @@
-﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -12,26 +10,23 @@ namespace ContosoUniversity.Models
         [Required]
         [Display(Name = "Last Name")]
         [StringLength(50)]
-        public string LastName { get; set; }
+        public string LastName { get; set; } = string.Empty;
 
         [Required]
         [Column("FirstName")]
         [Display(Name = "First Name")]
         [StringLength(50)]
-        public string FirstMidName { get; set; }
+        public string FirstMidName { get; set; } = string.Empty;
 
         [DataType(DataType.Date)]
-        [DisplayFormat(DataFormatString = "{0:dd-MM-yyyy}", ApplyFormatInEditMode = true)]
+        [DisplayFormat(DataFormatString = "{0:dd-MM-yyyy}", ApplyFormatInEditMode = false)]
         [Display(Name = "Hire Date")]
         public DateTime HireDate { get; set; }
 
         [Display(Name = "Full Name")]
-        public string FullName
-        {
-            get { return LastName + ", " + FirstMidName; }
-        }
+        public string FullName => LastName + ", " + FirstMidName;
 
-        public virtual ICollection<Course> Courses { get; set; }
-        public virtual OfficeAssignment OfficeAssignment { get; set; }
+        public ICollection<Course> Courses { get; set; } = new List<Course>();
+        public OfficeAssignment? OfficeAssignment { get; set; }
     }
 }
