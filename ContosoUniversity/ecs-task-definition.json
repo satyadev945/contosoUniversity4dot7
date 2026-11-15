@@ -1,0 +1,35 @@
+{
+  "family": "contosouniversity",
+  "networkMode": "awsvpc",
+  "requiresCompatibilities": ["FARGATE"],
+  "cpu": "512",
+  "memory": "1024",
+  "executionRoleArn": "arn:aws:iam::${AWS_ACCOUNT_ID}:role/contosouniversity-ecs-task-execution-role",
+  "containerDefinitions": [
+    {
+      "name": "contosouniversity",
+      "image": "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/contosouniversity:latest",
+      "essential": true,
+      "portMappings": [
+        { "containerPort": 8080, "protocol": "tcp" }
+      ],
+      "environment": [
+        { "name": "ASPNETCORE_URLS", "value": "http://+:8080" }
+      ],
+      "secrets": [
+        {
+          "name": "ConnectionStrings__SchoolContext",
+          "valueFrom": "arn:aws:secretsmanager:${AWS_REGION}:${AWS_ACCOUNT_ID}:secret:contosouniversity/db-connection-string"
+        }
+      ],
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "/ecs/contosouniversity",
+          "awslogs-region": "${AWS_REGION}",
+          "awslogs-stream-prefix": "ecs"
+        }
+      }
+    }
+  ]
+}

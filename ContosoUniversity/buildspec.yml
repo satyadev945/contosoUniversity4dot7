@@ -1,0 +1,25 @@
+version: 0.2
+# CodeBuild: builds the image using the ECR pull-through cache for MCR base images and pre-warms
+# the cache/image so ECS Fargate tasks start with minimal cold-start latency.
+env:
+  variables:
+    ECR_REPOSITORY: contosouniversity
+    MCR_CACHE_PREFIX: mcr
+phases:
+  pre_build:
+    commands:
+      - ECR_REGISTRY=${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com
+      - aws ecr get-login-password --region ${AWS_REGION} | docker login --username AWS --password-stdin ${ECR_REGISTRY}
+      # Ensure pull-through cache rule for mcr.microsoft.com exists (idempotent)
+      - aws ecr create-pull-through-cache-rule --ecr-repository-prefix ${MCR_CACHE_PREFIX} --upstream-registry-url mcr.microsoft.com --region ${AWS_REGION} || true
+      # Pre-warm base images into the ECR cache
+      - docker pull ${ECR_REGISTRY}/${MCR_CACHE_PREFIX}/dotnet/sdk:8.0
+      - docker pull ${ECR_REGISTRY}/${MCR_CACHE_PREFIX}/dotnet/aspnet:8.0
+  build:
+    commands:
+      - docker build --build-arg BASE_REGISTRY=${ECR_REGISTRY}/${MCR_CACHE_PREFIX} -t ${ECR_REGISTRY}/${ECR_REPOSITORY}:latest .
+  post_build:
+    commands:
+      - docker push ${ECR_REGISTRY}/${ECR_REPOSITORY}:latest
+      # Pre-warm: pull the pushed image once so layers are cached/validated in ECR
+      - docker pull ${ECR_REGISTRY}/${ECR_REPOSITORY}:latest

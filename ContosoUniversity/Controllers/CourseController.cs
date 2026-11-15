@@ -1,11 +1,10 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Data.Entity;
+using Microsoft.EntityFrameworkCore;
 using System.Linq;
-using System.Net;
-using System.Web;
-using System.Web.Mvc;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using ContosoUniversity.DAL;
 using ContosoUniversity.Models;
 
@@ -13,32 +12,37 @@ namespace ContosoUniversity.Controllers
 {
     public class CourseController : Controller
     {
-        private SchoolContext db = new SchoolContext();
+        private readonly SchoolContext db;
+
+        public CourseController(SchoolContext context)
+        {
+            db = context;
+        }
 
         // GET: Course
-        public ActionResult Index()
+        public IActionResult Index()
         {
             var courses = db.Courses.Include(c => c.Department);
             return View(courses.ToList());
         }
 
         // GET: Course/Details/5
-        public ActionResult Details(int? id)
+        public IActionResult Details(int? id)
         {
             if (id == null)
             {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                return BadRequest();
             }
             Course course = db.Courses.Find(id);
             if (course == null)
             {
-                return HttpNotFound();
+                return NotFound();
             }
             return View(course);
         }
 
         // GET: Course/Create
-        public ActionResult Create()
+        public IActionResult Create()
         {
             ViewBag.DepartmentID = new SelectList(db.Departments, "DepartmentID", "Name");
             return View();
@@ -49,7 +53,7 @@ namespace ContosoUniversity.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "CourseID,Title,Credits,DepartmentID")] Course course)
+        public IActionResult Create([Bind("CourseID,Title,Credits,DepartmentID")] Course course)
         {
             if (ModelState.IsValid)
             {
@@ -63,16 +67,16 @@ namespace ContosoUniversity.Controllers
         }
 
         // GET: Course/Edit/5
-        public ActionResult Edit(int? id)
+        public IActionResult Edit(int? id)
         {
             if (id == null)
             {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                return BadRequest();
             }
             Course course = db.Courses.Find(id);
             if (course == null)
             {
-                return HttpNotFound();
+                return NotFound();
             }
             ViewBag.DepartmentID = new SelectList(db.Departments, "DepartmentID", "Name", course.DepartmentID);
             return View(course);
@@ -83,7 +87,7 @@ namespace ContosoUniversity.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "CourseID,Title,Credits,DepartmentID")] Course course)
+        public IActionResult Edit([Bind("CourseID,Title,Credits,DepartmentID")] Course course)
         {
             if (ModelState.IsValid)
             {
@@ -96,16 +100,16 @@ namespace ContosoUniversity.Controllers
         }
 
         // GET: Course/Delete/5
-        public ActionResult Delete(int? id)
+        public IActionResult Delete(int? id)
         {
             if (id == null)
             {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                return BadRequest();
             }
             Course course = db.Courses.Find(id);
             if (course == null)
             {
-                return HttpNotFound();
+                return NotFound();
             }
             return View(course);
         }
@@ -113,21 +117,12 @@ namespace ContosoUniversity.Controllers
         // POST: Course/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public ActionResult DeleteConfirmed(int id)
+        public IActionResult DeleteConfirmed(int id)
         {
             Course course = db.Courses.Find(id);
             db.Courses.Remove(course);
             db.SaveChanges();
             return RedirectToAction("Index");
-        }
-
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                db.Dispose();
-            }
-            base.Dispose(disposing);
         }
     }
 }

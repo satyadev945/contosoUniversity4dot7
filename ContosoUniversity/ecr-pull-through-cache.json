@@ -1,0 +1,6 @@
+{
+  "_comment": "Create once per account/region: aws ecr create-pull-through-cache-rule --ecr-repository-prefix mcr --upstream-registry-url mcr.microsoft.com --region ${AWS_REGION}",
+  "ecrRepositoryPrefix": "mcr",
+  "upstreamRegistryUrl": "mcr.microsoft.com",
+  "region": "${AWS_REGION}"
+}
