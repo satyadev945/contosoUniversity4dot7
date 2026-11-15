@@ -1,6 +1,4 @@
-﻿@model PagedList.IPagedList<ContosoUniversity.Models.Student>
-@using PagedList.Mvc;
-<link href="~/Content/PagedList.css" rel="stylesheet" type="text/css" />
+@model ContosoUniversity.PaginatedList<ContosoUniversity.Models.Student>
 
 @{
     ViewBag.Title = "Students";
@@ -59,5 +57,21 @@
 <br />
 Page @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) of @Model.PageCount
 
-@Html.PagedListPager(Model, page => Url.Action("Index",
-    new { page, sortOrder = ViewBag.CurrentSort, currentFilter = ViewBag.CurrentFilter }))
+<ul class="pagination">
+    @if (Model.HasPreviousPage)
+    {
+        <li><a href="@Url.Action("Index", new { page = Model.PageNumber - 1, sortOrder = ViewBag.CurrentSort, currentFilter = ViewBag.CurrentFilter })">&laquo; Previous</a></li>
+    }
+    else
+    {
+        <li class="disabled"><span>&laquo; Previous</span></li>
+    }
+    @if (Model.HasNextPage)
+    {
+        <li><a href="@Url.Action("Index", new { page = Model.PageNumber + 1, sortOrder = ViewBag.CurrentSort, currentFilter = ViewBag.CurrentFilter })">Next &raquo;</a></li>
+    }
+    else
+    {
+        <li class="disabled"><span>Next &raquo;</span></li>
+    }
+</ul>
