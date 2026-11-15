@@ -1,7 +1,7 @@
 ﻿using ContosoUniversity.DAL;
 using ContosoUniversity.ViewModels;
 using ContosoUniversity.Services;
-using System.Data.Entity;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -27,13 +27,15 @@ namespace ContosoUniversity.Controllers
             // Aggregated statistics cached briefly in GCP Memorystore (Redis); falls back to DB.
             var data = await cache.GetOrSetAsync("stats:enrollment-by-date", () =>
             {
-                IQueryable<EnrollmentDataGroup> query = from student in db.Students
-                                                        group student by student.EnrollmentDate into dataGroup
-                                                        select new EnrollmentDataGroup()
-                                                        {
-                                                            EnrollmentDate = dataGroup.Key,
-                                                            StudentCount = dataGroup.Count()
-                                                        };
+                // EF Core query (method syntax); translated to PostgreSQL via Npgsql provider.
+                IQueryable<EnrollmentDataGroup> query = db.Students
+                    .AsNoTracking()
+                    .GroupBy(student => student.EnrollmentDate)
+                    .Select(dataGroup => new EnrollmentDataGroup
+                    {
+                        EnrollmentDate = dataGroup.Key,
+                        StudentCount = dataGroup.Count()
+                    });
                 return query.ToListAsync();
             }, TimeSpan.FromSeconds(30));
 
