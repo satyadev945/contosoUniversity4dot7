@@ -11,9 +11,13 @@
 **/*.log
 **/*.tmp
 **/*.md
+**/.DS_Store
+**/launchSettings.json
 **/TestResults/
 **/node_modules/
 **/packages/
 **/publish/
-Dockerfile*
-.dockerignore
+**/kubernetes/
+**/scripts/
+**/docs/
+**/docker-compose*.yml
