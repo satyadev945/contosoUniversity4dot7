@@ -6,30 +6,51 @@ using System.Linq;
 using System.Net;
 using System.Web;
 using System.Web.Mvc;
+using System.Threading.Tasks;
 using ContosoUniversity.DAL;
 using ContosoUniversity.Models;
+using ContosoUniversity.Services;
 
 namespace ContosoUniversity.Controllers
 {
     public class CourseController : Controller
     {
         private SchoolContext db = new SchoolContext();
+        private readonly ICacheService cache = new RedisCacheService();
+
+        private async Task<SelectList> GetDepartmentSelectListAsync(object selected = null)
+        {
+            // Department lookup list cached in GCP Memorystore (Redis); falls back to DB.
+            var departments = await cache.GetOrSetAsync("lookup:departments",
+                () => db.Departments
+                        .OrderBy(d => d.DepartmentID)
+                        .Select(d => new DepartmentLookup { DepartmentID = d.DepartmentID, Name = d.Name })
+                        .ToListAsync(),
+                TimeSpan.FromMinutes(5));
+            return new SelectList(departments, "DepartmentID", "Name", selected);
+        }
+
+        public class DepartmentLookup
+        {
+            public int DepartmentID { get; set; }
+            public string Name { get; set; }
+        }
 
         // GET: Course
-        public ActionResult Index()
+        public async Task<ActionResult> Index()
         {
             var courses = db.Courses.Include(c => c.Department);
-            return View(courses.ToList());
+            return View(await courses.ToListAsync());
         }
 
         // GET: Course/Details/5
-        public ActionResult Details(int? id)
+        public async Task<ActionResult> Details(int? id)
         {
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Course course = db.Courses.Find(id);
+            Course course = await db.Courses.FindAsync(id);
             if (course == null)
             {
                 return HttpNotFound();
@@ -38,9 +59,9 @@ namespace ContosoUniversity.Controllers
         }
 
         // GET: Course/Create
-        public ActionResult Create()
+        public async Task<ActionResult> Create()
         {
-            ViewBag.DepartmentID = new SelectList(db.Departments, "DepartmentID", "Name");
+            ViewBag.DepartmentID = await GetDepartmentSelectListAsync();
             return View();
         }
 
@@ -49,32 +70,32 @@ namespace ContosoUniversity.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "CourseID,Title,Credits,DepartmentID")] Course course)
+        public async Task<ActionResult> Create([Bind(Include = "CourseID,Title,Credits,DepartmentID")] Course course)
         {
             if (ModelState.IsValid)
             {
                 db.Courses.Add(course);
-                db.SaveChanges();
+                await db.SaveChangesAsync();
                 return RedirectToAction("Index");
             }
 
-            ViewBag.DepartmentID = new SelectList(db.Departments, "DepartmentID", "Name", course.DepartmentID);
+            ViewBag.DepartmentID = await GetDepartmentSelectListAsync(course.DepartmentID);
             return View(course);
         }
 
         // GET: Course/Edit/5
-        public ActionResult Edit(int? id)
+        public async Task<ActionResult> Edit(int? id)
         {
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Course course = db.Courses.Find(id);
+            Course course = await db.Courses.FindAsync(id);
             if (course == null)
             {
                 return HttpNotFound();
             }
-            ViewBag.DepartmentID = new SelectList(db.Departments, "DepartmentID", "Name", course.DepartmentID);
+            ViewBag.DepartmentID = await GetDepartmentSelectListAsync(course.DepartmentID);
             return View(course);
         }
 
@@ -83,26 +104,26 @@ namespace ContosoUniversity.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "CourseID,Title,Credits,DepartmentID")] Course course)
+        public async Task<ActionResult> Edit([Bind(Include = "CourseID,Title,Credits,DepartmentID")] Course course)
         {
             if (ModelState.IsValid)
             {
                 db.Entry(course).State = EntityState.Modified;
-                db.SaveChanges();
+                await db.SaveChangesAsync();
                 return RedirectToAction("Index");
             }
-            ViewBag.DepartmentID = new SelectList(db.Departments, "DepartmentID", "Name", course.DepartmentID);
+            ViewBag.DepartmentID = await GetDepartmentSelectListAsync(course.DepartmentID);
             return View(course);
         }
 
         // GET: Course/Delete/5
-        public ActionResult Delete(int? id)
+        public async Task<ActionResult> Delete(int? id)
         {
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Course course = db.Courses.Find(id);
+            Course course = await db.Courses.FindAsync(id);
             if (course == null)
             {
                 return HttpNotFound();
@@ -113,11 +134,11 @@ namespace ContosoUniversity.Controllers
         // POST: Course/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public ActionResult DeleteConfirmed(int id)
+        public async Task<ActionResult> DeleteConfirmed(int id)
         {
-            Course course = db.Courses.Find(id);
+            Course course = await db.Courses.FindAsync(id);
             db.Courses.Remove(course);
-            db.SaveChanges();
+            await db.SaveChangesAsync();
             return RedirectToAction("Index");
         }
 

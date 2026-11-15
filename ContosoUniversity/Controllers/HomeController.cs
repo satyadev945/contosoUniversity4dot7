@@ -1,10 +1,13 @@
 ﻿using ContosoUniversity.DAL;
 using ContosoUniversity.ViewModels;
+using ContosoUniversity.Services;
+using System.Data.Entity;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using System.Threading.Tasks;
 
 namespace ContosoUniversity.Controllers
 {
@@ -12,30 +15,36 @@ namespace ContosoUniversity.Controllers
     {
 
         private SchoolContext db = new SchoolContext();
+        private readonly ICacheService cache = new RedisCacheService();
 
-        public ActionResult Index()
+        public Task<ActionResult> Index()
         {
-            return View();
+            return Task.FromResult<ActionResult>(View());
         }
 
-        public ActionResult About()
+        public async Task<ActionResult> About()
         {
-            IQueryable<EnrollmentDataGroup> data = from student in db.Students
-                                                   group student by student.EnrollmentDate into dataGroup
-                                                   select new EnrollmentDataGroup()
-                                                   {
-                                                       EnrollmentDate = dataGroup.Key,
-                                                       StudentCount = dataGroup.Count()
-                                                   };
+            // Aggregated statistics cached briefly in GCP Memorystore (Redis); falls back to DB.
+            var data = await cache.GetOrSetAsync("stats:enrollment-by-date", () =>
+            {
+                IQueryable<EnrollmentDataGroup> query = from student in db.Students
+                                                        group student by student.EnrollmentDate into dataGroup
+                                                        select new EnrollmentDataGroup()
+                                                        {
+                                                            EnrollmentDate = dataGroup.Key,
+                                                            StudentCount = dataGroup.Count()
+                                                        };
+                return query.ToListAsync();
+            }, TimeSpan.FromSeconds(30));
 
-            return View(data.ToList());
+            return View(data);
         }
 
-        public ActionResult Contact()
+        public Task<ActionResult> Contact()
         {
-            ViewBag.Message = "Your contact page.";
+            ViewBag.Message = HtmlSanitizerProvider.Sanitize("Your contact page.");
 
-            return View();
+            return Task.FromResult<ActionResult>(View());
         }
 
         protected override void Dispose(bool disposing)

@@ -6,6 +6,11 @@ namespace ContosoUniversity.DAL
 {
     public class SchoolContext : DbContext
     {
+        // Connection string is resolved from GCP Secret Manager (see MvcApplication.GetConnectionString).
+        public SchoolContext() : base(MvcApplication.GetConnectionString())
+        {
+        }
+
         public DbSet<Course> Courses { get; set; }
         public DbSet<Department> Departments { get; set; }
         public DbSet<Enrollment> Enrollments { get; set; }

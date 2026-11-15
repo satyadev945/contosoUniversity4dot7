@@ -223,11 +223,19 @@ if (!jQuery) { throw new Error("Bootstrap requires jQuery") }
     $el[val](data[state] || this.options[state])
 
     // push to event loop to allow forms to submit
-    setTimeout(function () {
+    var applyState = function () {
       state == 'loadingText' ?
         $el.addClass(d).attr(d, d) :
         $el.removeClass(d).removeAttr(d);
-    }, 0)
+    }
+
+    if (typeof Promise !== 'undefined') {
+      // Promise-based deferral (flat chain instead of a nested callback)
+      new Promise(function (resolve) { setTimeout(resolve, 0) }).then(applyState)
+    } else {
+      // fallback for legacy browsers without Promise support
+      setTimeout(applyState, 0)
+    }
   }
 
   Button.prototype.toggle = function () {
