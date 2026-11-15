@@ -1,5 +1,6 @@
 using System.Data.Common;
 using Microsoft.EntityFrameworkCore.Diagnostics;
+using Npgsql;
 
 namespace ContosoUniversity.DAL
 {
