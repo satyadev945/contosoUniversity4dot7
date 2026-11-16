@@ -23,7 +23,7 @@ namespace ContosoUniversity.Controllers
 
         public async Task<ActionResult> About()
         {
-            IQueryable<EnrollmentDataGroup> data = from student in db.Students
+            IQueryable<EnrollmentDataGroup> data = from student in db.Students.AsNoTracking()
                                                    group student by student.EnrollmentDate into dataGroup
                                                    select new EnrollmentDataGroup()
                                                    {

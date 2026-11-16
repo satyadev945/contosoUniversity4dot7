@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Data.Entity;
+using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
@@ -11,7 +11,7 @@ using System.Web.Mvc;
 using ContosoUniversity.DAL;
 using ContosoUniversity.Models;
 using PagedList;
-using System.Data.Entity.Infrastructure;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 
 namespace ContosoUniversity.Controllers
 {
@@ -52,7 +52,7 @@ namespace ContosoUniversity.Controllers
 
             ViewBag.CurrentFilter = searchString;
 
-            var students = from s in db.Students
+            var students = from s in db.Students.AsNoTracking()
                            select s;
 
             if (!string.IsNullOrEmpty(searchString))
@@ -112,7 +112,7 @@ namespace ContosoUniversity.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Student student = await db.Students.FindAsync(id);
+            Student student = await db.Students.Include(s => s.Enrollments).SingleOrDefaultAsync(s => s.ID == id);
             if (student == null)
             {
                 return HttpNotFound();

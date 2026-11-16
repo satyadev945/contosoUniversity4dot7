@@ -26,6 +26,7 @@ namespace ContosoUniversity.Models
         [Display(Name = "Enrollment Date")]
         public DateTime EnrollmentDate { get; set; }
 
+        [NotMapped]
         public string FullName
         {
             get
@@ -34,6 +35,7 @@ namespace ContosoUniversity.Models
             }
         }
 
-        public virtual ICollection<Enrollment> Enrollments { get; set; }
+        [InverseProperty("Student")]
+        public ICollection<Enrollment> Enrollments { get; set; } = new List<Enrollment>();
     }
 }
