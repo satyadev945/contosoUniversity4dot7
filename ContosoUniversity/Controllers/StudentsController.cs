@@ -4,6 +4,8 @@ using System.Data;
 using System.Data.Entity;
 using System.Linq;
 using System.Net;
+using System.Threading.Tasks;
+using ContosoUniversity.Caching;
 using System.Web;
 using System.Web.Mvc;
 using ContosoUniversity.DAL;
@@ -16,9 +18,24 @@ namespace ContosoUniversity.Controllers
     public class StudentsController : Controller
     {
         private SchoolContext db = new SchoolContext();
+        private readonly ICacheService cache = new RedisCacheService();
+
+        private const string ListVersionKey = "students:list:version";
+
+        private class StudentPage
+        {
+            public System.Collections.Generic.List<Student> Items { get; set; }
+            public int TotalCount { get; set; }
+        }
+
+        // Bumping the version invalidates all cached student list pages
+        private Task InvalidateListCacheAsync()
+        {
+            return cache.IncrementAsync(ListVersionKey);
+        }
 
         // GET: Students
-        public ActionResult Index(string sortOrder, string currentFilter,  string searchString, int? page)
+        public async Task<ActionResult> Index(string sortOrder, string currentFilter,  string searchString, int? page)
         {
             ViewBag.Currentsort = sortOrder;
             ViewBag.NameSortParm = String.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
@@ -62,17 +79,40 @@ namespace ContosoUniversity.Controllers
 
             int pageSize = 3;
             int pageNumber = (page ?? 1);
-            return View(students.ToPagedList(pageNumber, pageSize));
+
+            // Distributed cache (GCP Memorystore for Redis) lookup, fully asynchronous
+            var version = await cache.GetStringAsync(ListVersionKey) ?? "0";
+            var cacheKey = string.Format("students:list:v{0}:{1}:{2}:{3}", version, sortOrder, searchString, pageNumber);
+            var cached = await cache.GetAsync<StudentPage>(cacheKey);
+            if (cached == null)
+            {
+                var total = await students.CountAsync();
+                var items = await students
+                    .Skip((pageNumber - 1) * pageSize)
+                    .Take(pageSize)
+                    .Select(s => new Student
+                    {
+                        ID = s.ID,
+                        LastName = s.LastName,
+                        FirstMidName = s.FirstMidName,
+                        EnrollmentDate = s.EnrollmentDate
+                    })
+                    .ToListAsync();
+                cached = new StudentPage { Items = items, TotalCount = total };
+                await cache.SetAsync(cacheKey, cached, TimeSpan.FromMinutes(5));
+            }
+
+            return View(new StaticPagedList<Student>(cached.Items, pageNumber, pageSize, cached.TotalCount));
         }
 
         // GET: Students/Details/5
-        public ActionResult Details(int? id)
+        public async Task<ActionResult> Details(int? id)
         {
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Student student = db.Students.Find(id);
+            Student student = await db.Students.FindAsync(id);
             if (student == null)
             {
                 return HttpNotFound();
@@ -91,14 +131,15 @@ namespace ContosoUniversity.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "LastName,FirstMidName,EnrollmentDate")] Student student)
+        public async Task<ActionResult> Create([Bind(Include = "LastName,FirstMidName,EnrollmentDate")] Student student)
         {
             try
             {
                 if (ModelState.IsValid)
                 {
                     db.Students.Add(student);
-                    db.SaveChanges();
+                    await db.SaveChangesAsync();
+                await InvalidateListCacheAsync();
                     return RedirectToAction("Index");
                 }
             }
@@ -113,13 +154,13 @@ namespace ContosoUniversity.Controllers
         }
 
         // GET: Students/Edit/5
-        public ActionResult Edit(int? id)
+        public async Task<ActionResult> Edit(int? id)
         {
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Student student = db.Students.Find(id);
+            Student student = await db.Students.FindAsync(id);
             if (student == null)
             {
                 return HttpNotFound();
@@ -132,19 +173,20 @@ namespace ContosoUniversity.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost, ActionName("Edit")]
         [ValidateAntiForgeryToken]
-        public ActionResult EditPost(int? id)
+        public async Task<ActionResult> EditPost(int? id)
         {
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            var studentToUpdate = db.Students.Find(id);
+            var studentToUpdate = await db.Students.FindAsync(id);
             if (TryUpdateModel(studentToUpdate, "",
                new string[] { "LastName", "FirstMidName", "EnrollmentDate" }))
             {
                 try
                 {
-                    db.SaveChanges();
+                    await db.SaveChangesAsync();
+                await InvalidateListCacheAsync();
 
                     return RedirectToAction("Index");
                 }
@@ -158,7 +200,7 @@ namespace ContosoUniversity.Controllers
         }
 
         // GET: Students/Delete/5
-        public ActionResult Delete(int? id, bool? saveChangesError = false)
+        public async Task<ActionResult> Delete(int? id, bool? saveChangesError = false)
         {
             if (id == null)
             {
@@ -168,7 +210,7 @@ namespace ContosoUniversity.Controllers
             {
                 ViewBag.ErrorMessage = "Delete failed. Try again, and if the problem persists see your system administrator.";
             }
-            Student student = db.Students.Find(id);
+            Student student = await db.Students.FindAsync(id);
             if (student == null)
             {
                 return HttpNotFound();
@@ -179,13 +221,14 @@ namespace ContosoUniversity.Controllers
         // POST: Students/Delete/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id)
+        public async Task<ActionResult> Delete(int id)
         {
             try
             {
-                Student student = db.Students.Find(id);
+                Student student = await db.Students.FindAsync(id);
                 db.Students.Remove(student);
-                db.SaveChanges();
+                await db.SaveChangesAsync();
+                await InvalidateListCacheAsync();
             }
             catch (Exception)
             {
