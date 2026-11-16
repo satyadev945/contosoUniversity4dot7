@@ -1,7 +1,7 @@
 ﻿@model IEnumerable<ContosoUniversity.Models.Course>
 
 @{
-    ViewBag.Title = "Courses";
+    ViewBag.Title = ContosoUniversity.Services.HtmlSanitizerService.Sanitize("Courses");
 }
 
 <h2>Courses</h2>
