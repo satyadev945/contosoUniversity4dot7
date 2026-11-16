@@ -1,0 +1,30 @@
+# Run from the ContosoUniversity directory: docker compose up --build
+services:
+  contosouniversity:
+    image: contosouniversity:latest
+    container_name: contosouniversity
+    build:
+      context: ..
+      dockerfile: ContosoUniversity/Dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_URLS=http://+:8080
+      # External PostgreSQL connection (provided separately)
+      - ConnectionStrings__SchoolContext=${SCHOOL_CONNECTION_STRING:-Host=host.docker.internal;Port=5432;Database=ContosoUniversity;Username=postgres;Password=changeme}
+    volumes:
+      - ./logs:/app/logs
+    healthcheck:
+      test: ["CMD-SHELL", "exec 3<>/dev/tcp/127.0.0.1/8080 && printf 'GET /health HTTP/1.0\\r\\n\\r\\n' >&3 && head -n1 <&3 | grep -q 200"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 40s
+    restart: unless-stopped
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
