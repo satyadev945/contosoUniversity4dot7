@@ -10,8 +10,8 @@ services:
     environment:
       ASPNETCORE_ENVIRONMENT: Production
       ASPNETCORE_URLS: http://+:8080
-      # External SQL Server connection (database is NOT part of this compose file)
-      ConnectionStrings__SchoolContext: "${SCHOOL_DB_CONNECTION_STRING:-Server=host.docker.internal,1433;Database=ContosoUniversity;User Id=sa;Password=change-me;TrustServerCertificate=True;}"
+      # External PostgreSQL connection (database is NOT part of this compose file)
+      ConnectionStrings__SchoolContext: "${SCHOOL_DB_CONNECTION_STRING:-Host=host.docker.internal;Port=5432;Database=ContosoUniversity;Username=postgres;Password=change-me;}"
       DB_INITIALIZE: "${DB_INITIALIZE:-false}"
       Logging__LogLevel__Default: Information
     volumes:

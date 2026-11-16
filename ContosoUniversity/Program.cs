@@ -22,18 +22,17 @@ builder.Configuration.AddEnvironmentVariables();
 string connectionString = builder.Configuration.GetConnectionString("SchoolContext")
     ?? Environment.GetEnvironmentVariable("DB_CONNECTION_STRING")
     ?? string.Format(
-        "Server={0},{1};Database={2};User Id={3};Password={4};TrustServerCertificate={5};",
+        "Host={0};Port={1};Database={2};Username={3};Password={4};",
         Environment.GetEnvironmentVariable("DB_HOST") ?? "localhost",
-        Environment.GetEnvironmentVariable("DB_PORT") ?? "1433",
+        Environment.GetEnvironmentVariable("DB_PORT") ?? "5432",
         Environment.GetEnvironmentVariable("DB_NAME") ?? "ContosoUniversity",
-        Environment.GetEnvironmentVariable("DB_USER") ?? "sa",
-        Environment.GetEnvironmentVariable("DB_PASSWORD") ?? string.Empty,
-        Environment.GetEnvironmentVariable("DB_TRUST_SERVER_CERTIFICATE") ?? "true");
+        Environment.GetEnvironmentVariable("DB_USER") ?? "postgres",
+        Environment.GetEnvironmentVariable("DB_PASSWORD") ?? string.Empty);
 
 builder.Services.AddControllersWithViews();
 builder.Services.AddDbContext<SchoolContext>(options =>
     options.UseLazyLoadingProxies()
-           .UseSqlServer(connectionString, sql => sql.EnableRetryOnFailure())
+           .UseNpgsql(connectionString, npgsql => npgsql.EnableRetryOnFailure())
            .AddInterceptors(new SchoolInterceptorLogging()));
 builder.Services.AddHealthChecks();
 
