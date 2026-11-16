@@ -1,22 +1,36 @@
-# Build context: the ContosoUniversity project directory
-#   docker build -t contosouniversity .
-# The project has been migrated to ASP.NET Core (net8.0), so the Windows
-# aspnet:4.8 / IIS image is not applicable; the Linux ASP.NET Core runtime is used.
-FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
+# Build context: repository root (the folder containing ContosoUniversity.sln)
+#   docker build -f ContosoUniversity/Dockerfile -t contosouniversity:latest .
+# NOTE: The requested base image mcr.microsoft.com/dotnet/framework/aspnet:4.7.2 is a Windows
+# .NET Framework image and cannot run this net8.0 ASP.NET Core application, so the official
+# Linux ASP.NET Core 8.0 runtime image is used instead.
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS builder
 WORKDIR /src
-COPY ContosoUniversity.csproj ./
-RUN dotnet restore ContosoUniversity.csproj
-COPY . .
-RUN dotnet publish ContosoUniversity.csproj -c Release -o /app/publish /p:UseAppHost=false /p:DebugType=None /p:DebugSymbols=false
-RUN find /app/publish -name '*.pdb' -delete
+
+# Restore first for NuGet layer caching
+COPY ContosoUniversity/ContosoUniversity.csproj ContosoUniversity/
+RUN dotnet restore ContosoUniversity/ContosoUniversity.csproj
+
+# Copy the sources, build and publish
+COPY ContosoUniversity/ ContosoUniversity/
+RUN dotnet build ContosoUniversity/ContosoUniversity.csproj -c Release --no-restore
+RUN dotnet publish ContosoUniversity/ContosoUniversity.csproj -c Release --no-build -o /app/publish /p:UseAppHost=false
 
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS final
 WORKDIR /app
-COPY --from=build /app/publish .
+COPY --from=builder /app/publish .
 
-ENV ASPNETCORE_URLS=http://+:8080
-# Supply at runtime: ConnectionStrings__SchoolContext or DB_HOST/DB_NAME/DB_USER/DB_PASSWORD,
-# and optionally APPLICATIONINSIGHTS_CONNECTION_STRING
+ENV ASPNETCORE_ENVIRONMENT=Production \
+    ASPNETCORE_URLS=http://+:8080 \
+    DOTNET_RUNNING_IN_CONTAINER=true \
+    DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=true \
+    DOTNET_gcServer=0 \
+    TZ=UTC
+
+# External services are supplied at runtime:
+#   ConnectionStrings__SchoolContext  or  DB_HOST / DB_NAME / DB_USER / DB_PASSWORD
+#   APPLICATIONINSIGHTS_CONNECTION_STRING (optional)
 EXPOSE 8080
+
+# Non-root user (APP_UID is predefined in the official .NET 8 images)
 USER $APP_UID
 ENTRYPOINT ["dotnet", "ContosoUniversity.dll"]
