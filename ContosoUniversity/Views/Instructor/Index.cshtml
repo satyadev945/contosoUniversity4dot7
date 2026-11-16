@@ -1,15 +1,14 @@
-﻿@model ContosoUniversity.ViewModels.InstructorIndexData
+@model ContosoUniversity.ViewModels.InstructorIndexData
 
 @{
     ViewBag.Title = "Instructors";
 }
 
 <h2>Instructors</h2>
-<br/>
+<br />
 
 <p>
-    <button class="btn btn-primary" onClick="location.href =' @Url.Action("Create", "Instructor")';return false;">Create New</button>
-   
+    <a class="btn btn-primary" asp-action="Create">Create New</a>
 </p>
 <br />
 <table class="table">
@@ -24,7 +23,7 @@
     @foreach (var item in Model.Instructors)
     {
         string selectedRow = "";
-        if (item.ID == ViewBag.InstructorID)
+        if (item.ID == (int?)ViewBag.InstructorID)
         {
             selectedRow = "success";
         }
@@ -45,14 +44,10 @@
                 }
             </td>
             <td>
-                <button class="btn " onClick="location.href =' @Url.Action("Index", "Instructor", new { id = item.ID })';return false;">Select</button>
-                <button class="btn btn-warning" onClick="location.href =' @Url.Action("Edit", "Instructor", new { id = item.ID })';return false;">Edit</button>
-                <button class="btn btn-info" onClick="location.href =' @Url.Action("Details", "Instructor", new { id = item.ID  })';return false;">Details</button>
-                <button class="btn btn-danger" onClick="location.href =' @Url.Action("Delete", "Instructor", new { id = item.ID  })';return false;">Delete</button>
-                @*@Html.ActionLink("Select", "Index", new { id = item.ID }) |
-                @Html.ActionLink("Edit", "Edit", new { id = item.ID }) |
-                @Html.ActionLink("Details", "Details", new { id = item.ID }) |
-                @Html.ActionLink("Delete", "Delete", new { id = item.ID })*@
+                <a class="btn" asp-action="Index" asp-route-id="@item.ID">Select</a>
+                <a class="btn btn-warning" asp-action="Edit" asp-route-id="@item.ID">Edit</a>
+                <a class="btn btn-info" asp-action="Details" asp-route-id="@item.ID">Details</a>
+                <a class="btn btn-danger" asp-action="Delete" asp-route-id="@item.ID">Delete</a>
             </td>
         </tr>
     }
@@ -73,14 +68,13 @@
         @foreach (var item in Model.Courses)
         {
             string selectedRow = "";
-            if (item.CourseID == ViewBag.CourseID)
+            if (item.CourseID == (int?)ViewBag.CourseID)
             {
                 selectedRow = "success";
             }
             <tr class="@selectedRow">
                 <td>
-                    <button class="btn " onClick="location.href =' @Url.Action("Index", "Instructor", new { courseId = item.CourseID })';return false;">Select</button>
-                    @*@Html.ActionLink("Select", "Index", new { courseID = item.CourseID })*@
+                    <a class="btn" asp-action="Index" asp-route-id="@((int?)ViewBag.InstructorID)" asp-route-courseID="@item.CourseID">Select</a>
                 </td>
                 <td>
                     @item.CourseID
@@ -89,7 +83,7 @@
                     @item.Title
                 </td>
                 <td>
-                    @item.Department.Name
+                    @item.Department?.Name
                 </td>
             </tr>
         }
@@ -109,7 +103,7 @@
             {
                 <tr>
                     <td>
-                        @item.Student.FullName
+                        @item.Student?.FullName
                     </td>
                     <td>
                         @Html.DisplayFor(modelItem => item.Grade)
