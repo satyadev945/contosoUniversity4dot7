@@ -3,7 +3,7 @@ using ContosoUniversity.Services;
 using ContosoUniversity.ViewModels;
 using System;
 using System.Collections.Generic;
-using System.Data.Entity;
+using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
@@ -23,15 +23,17 @@ namespace ContosoUniversity.Controllers
 
         public async Task<ActionResult> About()
         {
-            IQueryable<EnrollmentDataGroup> data = from student in db.Students
-                                                   group student by student.EnrollmentDate into dataGroup
-                                                   select new EnrollmentDataGroup()
-                                                   {
-                                                       EnrollmentDate = dataGroup.Key,
-                                                       StudentCount = dataGroup.Count()
-                                                   };
+            // EF Core (Npgsql) query; no LINQ to SQL APIs (LoadWith/DataLoadOptions/ExecuteQuery) are used.
+            var data = await db.Students.AsNoTracking()
+                .GroupBy(student => student.EnrollmentDate)
+                .Select(dataGroup => new EnrollmentDataGroup()
+                {
+                    EnrollmentDate = dataGroup.Key,
+                    StudentCount = dataGroup.Count()
+                })
+                .ToListAsync();
 
-            return View(await data.ToListAsync());
+            return View(data);
         }
 
         public ActionResult Contact()

@@ -33,7 +33,7 @@ namespace ContosoUniversity.Controllers
             {
                 return cached;
             }
-            var student = await db.Students.FindAsync(id);
+            var student = await db.Students.AsNoTracking().FirstOrDefaultAsync(s => s.ID == id);
             await _studentCache.SetAsync(student);
             return student;
         }

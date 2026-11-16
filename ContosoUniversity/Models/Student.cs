@@ -17,7 +17,7 @@ namespace ContosoUniversity.Models
 
         [Required]
         [StringLength(50, ErrorMessage = "First Name must be less than 50 Characters")]
-        [Column("FirstName")]
+        [Column("firstname")]
         [Display(Name = "First Name")]
         public string FirstMidName { get; set; }
 
