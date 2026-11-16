@@ -1,4 +1,4 @@
-﻿@model ContosoUniversity.Models.Instructor
+@model Instructor
 
 @{
     ViewBag.Title = "Details";
@@ -15,7 +15,7 @@
         </dt>
 
         <dd>
-            @Html.DisplayFor(model => model.OfficeAssignment.Location)
+            @Model.OfficeAssignment?.Location
         </dd>
 
         <dt>
@@ -45,7 +45,7 @@
     </dl>
 </div>
 <p>
-    <button class="btn btn-info" onClick="location.href =' @Url.Action("Edit", "Instructor", new { id = Model.ID })';return false;">Edit</button>
-    
-    @Html.ActionLink("Back to List", "Index")
+    <a class="btn btn-info" asp-action="Edit" asp-route-id="@Model.ID">Edit</a>
+
+    <a asp-action="Index">Back to List</a>
 </p>
