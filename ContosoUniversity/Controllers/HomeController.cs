@@ -20,19 +20,20 @@ namespace ContosoUniversity.Controllers
 
         public IActionResult Index()
         {
+            // Data access uses EF Core (SchoolContext) only; no LINQ to SQL APIs are used.
             return View();
         }
 
         public async Task<IActionResult> About()
         {
             var data = await _context.Students
+                .AsNoTracking()
                 .GroupBy(student => student.EnrollmentDate)
                 .Select(dataGroup => new EnrollmentDataGroup
                 {
                     EnrollmentDate = dataGroup.Key,
                     StudentCount = dataGroup.Count()
                 })
-                .AsNoTracking()
                 .ToListAsync();
 
             return View(data);

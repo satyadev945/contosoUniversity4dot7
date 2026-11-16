@@ -18,7 +18,7 @@ var connectionString = builder.Configuration.GetConnectionString("SchoolContext"
 
 builder.Services.AddDbContext<SchoolContext>((serviceProvider, options) =>
 {
-    options.UseSqlServer(connectionString, sql => sql.EnableRetryOnFailure(maxRetryCount: 5));
+    options.UseNpgsql(connectionString, sql => sql.EnableRetryOnFailure(maxRetryCount: 5));
     options.AddInterceptors(serviceProvider.GetRequiredService<SchoolInterceptorLogging>());
 });
 
