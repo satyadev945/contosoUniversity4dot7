@@ -1,5 +1,4 @@
-﻿@model PagedList.IPagedList<ContosoUniversity.Models.Student>
-@using PagedList.Mvc;
+@model ContosoUniversity.Data.PaginatedList<ContosoUniversity.Models.Student>
 <link href="~/Content/PagedList.css" rel="stylesheet" type="text/css" />
 
 @{
@@ -9,7 +8,7 @@
 <h2>Students</h2>
 <br />
 <p>
-    <button class="btn btn-primary" onClick="location.href ='@Url.Action("Create", "Students")';return false;">Create New</button>
+    <a class="btn btn-primary" href="@Url.Action("Create", "Students")">Create New</a>
    
 </p>
 <br />
@@ -47,9 +46,9 @@
                 @Html.DisplayFor(modelItem => item.EnrollmentDate)
             </td>
             <td>
-                <button class="btn btn-warning" onClick="location.href =' @Url.Action("Edit", "Students", new { id = item.ID })';return false;">Edit</button>
-                <button class="btn btn-info" onClick="location.href =' @Url.Action("Details", "Students", new { id = item.ID })';return false;">Details</button>
-                <button class="btn btn-danger" onClick="location.href =' @Url.Action("Delete", "Students", new { id = item.ID })';return false;">Delete</button>
+                <a class="btn btn-warning" href="@Url.Action("Edit", "Students", new { id = item.ID })">Edit</a>
+                <a class="btn btn-info" href="@Url.Action("Details", "Students", new { id = item.ID })">Details</a>
+                <a class="btn btn-danger" href="@Url.Action("Delete", "Students", new { id = item.ID })">Delete</a>
                
             </td>
         </tr>
@@ -59,5 +58,17 @@
 <br />
 Page @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) of @Model.PageCount
 
-@Html.PagedListPager(Model, page => Url.Action("Index",
-    new { page, sortOrder = ViewBag.CurrentSort, currentFilter = ViewBag.CurrentFilter }))
+<ul class="pagination">
+    <li class="@(Model.HasPreviousPage ? "" : "disabled")">
+        <a asp-action="Index" asp-route-page="@(Model.PageNumber - 1)" asp-route-sortOrder="@ViewBag.CurrentSort" asp-route-currentFilter="@ViewBag.CurrentFilter">&laquo; Previous</a>
+    </li>
+    @for (int i = 1; i <= Model.PageCount; i++)
+    {
+        <li class="@(i == Model.PageNumber ? "active" : "")">
+            <a asp-action="Index" asp-route-page="@i" asp-route-sortOrder="@ViewBag.CurrentSort" asp-route-currentFilter="@ViewBag.CurrentFilter">@i</a>
+        </li>
+    }
+    <li class="@(Model.HasNextPage ? "" : "disabled")">
+        <a asp-action="Index" asp-route-page="@(Model.PageNumber + 1)" asp-route-sortOrder="@ViewBag.CurrentSort" asp-route-currentFilter="@ViewBag.CurrentFilter">Next &raquo;</a>
+    </li>
+</ul>
