@@ -1,5 +1,5 @@
 # Run from the ContosoUniversity module directory:  docker compose up --build
-# Only the application is defined here; SQL Server must be provided externally.
+# Only the application is defined here; PostgreSQL must be provided externally.
 services:
   contosouniversity:
     image: contosouniversity:latest
@@ -14,7 +14,7 @@ services:
       - ASPNETCORE_URLS=http://+:8080
       - DB_HOST=${DB_HOST:-host.docker.internal}
       - DB_NAME=${DB_NAME:-ContosoUniversity}
-      - DB_USER=${DB_USER:-sa}
+      - DB_USER=${DB_USER:-postgres}
       - DB_PASSWORD=${DB_PASSWORD:-}
       - APPLICATIONINSIGHTS_CONNECTION_STRING=${APPLICATIONINSIGHTS_CONNECTION_STRING:-}
     extra_hosts:

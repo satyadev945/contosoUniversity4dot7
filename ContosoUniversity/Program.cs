@@ -10,15 +10,15 @@ if (string.IsNullOrWhiteSpace(connectionString))
 {
     var dbHost = Environment.GetEnvironmentVariable("DB_HOST") ?? "localhost";
     var dbName = Environment.GetEnvironmentVariable("DB_NAME") ?? "ContosoUniversity";
-    var dbUser = Environment.GetEnvironmentVariable("DB_USER") ?? "sa";
+    var dbUser = Environment.GetEnvironmentVariable("DB_USER") ?? "postgres";
     var dbPassword = Environment.GetEnvironmentVariable("DB_PASSWORD") ?? string.Empty;
-    connectionString = $"Server={dbHost};Database={dbName};User Id={dbUser};Password={dbPassword};TrustServerCertificate=True";
+    connectionString = $"Host={dbHost};Port=5432;Database={dbName};Username={dbUser};Password={dbPassword}";
 }
 
 builder.Services.AddControllersWithViews();
 builder.Services.AddSingleton<SchoolInterceptorLogging>();
 builder.Services.AddDbContext<SchoolContext>((sp, options) =>
-    options.UseSqlServer(connectionString, sql => sql.EnableRetryOnFailure())
+    options.UseNpgsql(connectionString, sql => sql.EnableRetryOnFailure())
            .AddInterceptors(sp.GetRequiredService<SchoolInterceptorLogging>()));
 
 // Reads APPLICATIONINSIGHTS_CONNECTION_STRING from the environment when present.

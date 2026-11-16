@@ -2,6 +2,7 @@ using System.Data.Common;
 using ILogger = ContosoUniversity.Logging.ILogger;
 using Logger = ContosoUniversity.Logging.Logger;
 using Microsoft.EntityFrameworkCore.Diagnostics;
+using Npgsql;
 
 namespace ContosoUniversity.DAL
 {
