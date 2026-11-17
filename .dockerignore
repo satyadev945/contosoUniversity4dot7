@@ -1,41 +1,27 @@
-# Build output
 **/bin/
 **/obj/
 **/publish/
 **/out/
-
-# Source control
 .git
 .gitignore
 .gitattributes
-.gitmodules
-.svn
-.hg
-
-# IDE / user files
 .vs/
 .vscode/
 .idea/
 *.user
 *.suo
 *.userprefs
-*.sln.docstates
-
-# Debug symbols and temp artifacts
 **/*.pdb
 **/*.log
-**/*.tmp
-**/*.temp
-**/*.cache
-**/TestResults/
-**/_ReSharper*/
+**/launchSettings.json
 **/node_modules/
 **/packages/
-
-# Docker and docs (not needed in build context)
+.DS_Store
 Dockerfile*
 .dockerignore
 docker-compose*
-README.md
+kubernetes/
+scripts/
+docs/
 images/
-**/*.md
+*.md
