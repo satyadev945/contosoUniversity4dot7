@@ -1,8 +1,11 @@
 ﻿using ContosoUniversity.DAL;
+using ContosoUniversity.Services;
 using ContosoUniversity.ViewModels;
 using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
 
@@ -12,13 +15,14 @@ namespace ContosoUniversity.Controllers
     {
 
         private SchoolContext db = new SchoolContext();
+        private readonly IHtmlSanitizerService sanitizer = new HtmlSanitizerService();
 
         public ActionResult Index()
         {
             return View();
         }
 
-        public ActionResult About()
+        public async Task<ActionResult> About()
         {
             IQueryable<EnrollmentDataGroup> data = from student in db.Students
                                                    group student by student.EnrollmentDate into dataGroup
@@ -28,12 +32,12 @@ namespace ContosoUniversity.Controllers
                                                        StudentCount = dataGroup.Count()
                                                    };
 
-            return View(data.ToList());
+            return View(await sanitizer.SanitizeModelAsync(await data.ToListAsync()));
         }
 
-        public ActionResult Contact()
+        public async Task<ActionResult> Contact()
         {
-            ViewBag.Message = "Your contact page.";
+            ViewBag.Message = await sanitizer.SanitizeAsync("Your contact page.");
 
             return View();
         }
