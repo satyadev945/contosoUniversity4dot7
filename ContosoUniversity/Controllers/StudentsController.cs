@@ -35,7 +35,7 @@ namespace ContosoUniversity.Controllers
                 return cached;
             }
             var student = await db.Students
-                .Include(s => s.Enrollments.Select(e => e.Course))
+                .Include(s => s.Enrollments).ThenInclude(e => e.Course)
                 .AsNoTracking()
                 .SingleOrDefaultAsync(s => s.ID == id);
             await _studentCache.SetAsync(student);
