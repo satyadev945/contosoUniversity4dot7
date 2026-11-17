@@ -30,7 +30,7 @@ namespace ContosoUniversity.Controllers
             // Aggregated statistics are served from Azure Cache for Redis; the database query
             // runs asynchronously only on a cache miss.
             var data = await cache.GetOrCreateAsync(EnrollmentStatsCacheKey, async () =>
-                await (from student in db.Students
+                await (from student in db.Students.AsNoTracking()
                        group student by student.EnrollmentDate into dataGroup
                        select new EnrollmentDataGroup()
                        {
