@@ -22,7 +22,7 @@ namespace ContosoUniversity.Models
         public string FirstMidName { get; set; }
 
         [DataType(DataType.Date)]
-        [DisplayFormat(DataFormatString = "{0:dd-MM-yyyy}", ApplyFormatInEditMode = true)]
+        [DisplayFormat(DataFormatString = "{0:dd-MM-yyyy}", ApplyFormatInEditMode = false)]
         [Display(Name = "Enrollment Date")]
         public DateTime EnrollmentDate { get; set; }
 

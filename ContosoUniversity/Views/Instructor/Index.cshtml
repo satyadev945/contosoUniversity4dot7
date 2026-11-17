@@ -1,4 +1,4 @@
-﻿@model ContosoUniversity.ViewModels.InstructorIndexData
+@model ContosoUniversity.ViewModels.InstructorIndexData
 
 @{
     ViewBag.Title = "Instructors";
@@ -24,7 +24,7 @@
     @foreach (var item in Model.Instructors)
     {
         string selectedRow = "";
-        if (item.ID == ViewBag.InstructorID)
+        if (item.ID == (ViewBag.InstructorID as int?))
         {
             selectedRow = "success";
         }
@@ -73,13 +73,13 @@
         @foreach (var item in Model.Courses)
         {
             string selectedRow = "";
-            if (item.CourseID == ViewBag.CourseID)
+            if (item.CourseID == (ViewBag.CourseID as int?))
             {
                 selectedRow = "success";
             }
             <tr class="@selectedRow">
                 <td>
-                    <button class="btn " onClick="location.href =' @Url.Action("Index", "Instructor", new { courseId = item.CourseID })';return false;">Select</button>
+                    <button class="btn " onClick="location.href =' @Url.Action("Index", "Instructor", new { id = ViewBag.InstructorID, courseID = item.CourseID })';return false;">Select</button>
                     @*@Html.ActionLink("Select", "Index", new { courseID = item.CourseID })*@
                 </td>
                 <td>
