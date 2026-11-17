@@ -38,7 +38,7 @@ namespace ContosoUniversity.Controllers
 
             ViewBag.CurrentFilter = await sanitizer.SanitizeAsync(searchString);
 
-            var students = from s in db.Students
+            var students = from s in db.Students.Include(x => x.Enrollments)
                            select s;
 
             if (!string.IsNullOrEmpty(searchString))
