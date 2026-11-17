@@ -11,14 +11,16 @@ services:
       - ASPNETCORE_ENVIRONMENT=Production
       - ASPNETCORE_URLS=http://+:8080
       - TZ=UTC
-      # External SQL Server connection (not part of this compose file)
-      - ConnectionStrings__SchoolContext=${SCHOOL_CONNECTION_STRING:-}
+      # PostgreSQL connection
+      - ConnectionStrings__SchoolContext=${SCHOOL_CONNECTION_STRING:-Host=postgres;Port=5432;Database=${POSTGRES_DB};Username=${POSTGRES_USER};Password=${POSTGRES_PASSWORD}}
       # Optional: enables Application Insights telemetry when set
       - APPLICATIONINSIGHTS_CONNECTION_STRING=${APPLICATIONINSIGHTS_CONNECTION_STRING:-}
     volumes:
       - ./config:/app/config
     networks:
       - app-network
+    depends_on:
+      - postgres
     restart: unless-stopped
     healthcheck:
       test: ["CMD-SHELL", "bash -c 'exec 3<>/dev/tcp/127.0.0.1/8080' || exit 1"]
@@ -26,6 +28,26 @@ services:
       timeout: 5s
       retries: 3
       start_period: 30s
+
+  postgres:
+    image: postgres:15
+    container_name: postgres
+    environment:
+      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - app-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  pgdata:
 
 networks:
   app-network:
