@@ -1,11 +1,29 @@
-﻿using ContosoUniversity.Models;
+using ContosoUniversity.Models;
 using System.Data.Entity;
 using System.Data.Entity.ModelConfiguration.Conventions;
+using System;
 
 namespace ContosoUniversity.DAL
 {
     public class SchoolContext : DbContext
     {
+        // LocalDB (the old EF default) is Windows-only; the connection string is supplied
+        // through the environment (e.g. ConnectionStrings__SchoolContext) in Linux containers.
+        public SchoolContext() : base(ResolveConnectionString())
+        {
+        }
+
+        private static string ResolveConnectionString()
+        {
+            var connectionString = Environment.GetEnvironmentVariable("ConnectionStrings__SchoolContext");
+            if (string.IsNullOrWhiteSpace(connectionString))
+            {
+                throw new InvalidOperationException(
+                    "Database connection string not configured. Set the ConnectionStrings__SchoolContext environment variable.");
+            }
+            return connectionString;
+        }
+
         public DbSet<Course> Courses { get; set; }
         public DbSet<Department> Departments { get; set; }
         public DbSet<Enrollment> Enrollments { get; set; }
