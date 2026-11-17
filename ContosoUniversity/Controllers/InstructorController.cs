@@ -1,20 +1,21 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Data.Entity;
 using System.Linq;
-using System.Net;
-using System.Web;
-using System.Web.Mvc;
 using ContosoUniversity.DAL;
 using ContosoUniversity.Models;
 using ContosoUniversity.ViewModels;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
 
 namespace ContosoUniversity.Controllers
 {
     public class InstructorController : Controller
     {
-        private SchoolContext db = new SchoolContext();
+        private readonly SchoolContext db;
+
+        public InstructorController(SchoolContext context)
+        {
+            db = context;
+        }
 
         // GET: Instructor
         public ActionResult Index(int? id, int? courseID)
@@ -22,8 +23,9 @@ namespace ContosoUniversity.Controllers
             var viewModel = new InstructorIndexData();
             viewModel.Instructors = db.Instructors
                 .Include(i => i.OfficeAssignment)
-                .Include(i => i.Courses.Select(c => c.Department))
-                .OrderBy(i => i.LastName);
+                .Include(i => i.Courses).ThenInclude(c => c.Department)
+                .OrderBy(i => i.LastName)
+                .ToList();
 
             if (id != null)
             {
@@ -35,10 +37,6 @@ namespace ContosoUniversity.Controllers
             if (courseID != null)
             {
                 ViewBag.CourseID = courseID.Value;
-                // Lazy loading
-                //viewModel.Enrollments = viewModel.Courses.Where(
-                //    x => x.CourseID == courseID).Single().Enrollments;
-                // Explicit loading
                 var selectedCourse = viewModel.Courses.Where(x => x.CourseID == courseID).Single();
                 db.Entry(selectedCourse).Collection(x => x.Enrollments).Load();
                 foreach (Enrollment enrollment in selectedCourse.Enrollments)
@@ -57,12 +55,14 @@ namespace ContosoUniversity.Controllers
         {
             if (id == null)
             {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                return BadRequest();
             }
-            Instructor instructor = db.Instructors.Find(id);
+            Instructor instructor = db.Instructors
+                .Include(i => i.OfficeAssignment)
+                .FirstOrDefault(i => i.ID == id);
             if (instructor == null)
             {
-                return HttpNotFound();
+                return NotFound();
             }
             return View(instructor);
         }
@@ -75,11 +75,9 @@ namespace ContosoUniversity.Controllers
         }
 
         // POST: Instructor/Create
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "ID,LastName,FirstMidName,HireDate")] Instructor instructor)
+        public ActionResult Create([Bind("ID,LastName,FirstMidName,HireDate")] Instructor instructor)
         {
             if (ModelState.IsValid)
             {
@@ -97,23 +95,21 @@ namespace ContosoUniversity.Controllers
         {
             if (id == null)
             {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                return BadRequest();
             }
             Instructor instructor = db.Instructors.Find(id);
             if (instructor == null)
             {
-                return HttpNotFound();
+                return NotFound();
             }
             ViewBag.ID = new SelectList(db.OfficeAssignments, "InstructorID", "Location", instructor.ID);
             return View(instructor);
         }
 
         // POST: Instructor/Edit/5
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "ID,LastName,FirstMidName,HireDate")] Instructor instructor)
+        public ActionResult Edit([Bind("ID,LastName,FirstMidName,HireDate")] Instructor instructor)
         {
             if (ModelState.IsValid)
             {
@@ -130,12 +126,14 @@ namespace ContosoUniversity.Controllers
         {
             if (id == null)
             {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                return BadRequest();
             }
-            Instructor instructor = db.Instructors.Find(id);
+            Instructor instructor = db.Instructors
+                .Include(i => i.OfficeAssignment)
+                .FirstOrDefault(i => i.ID == id);
             if (instructor == null)
             {
-                return HttpNotFound();
+                return NotFound();
             }
             return View(instructor);
         }
@@ -149,15 +147,6 @@ namespace ContosoUniversity.Controllers
             db.Instructors.Remove(instructor);
             db.SaveChanges();
             return RedirectToAction("Index");
-        }
-
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                db.Dispose();
-            }
-            base.Dispose(disposing);
         }
     }
 }

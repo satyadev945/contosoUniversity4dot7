@@ -1,5 +1,4 @@
-﻿using System;
-using System.Diagnostics;
+using System;
 using System.Text;
 
 
@@ -10,47 +9,47 @@ namespace ContosoUniversity.Logging
     {
         public void Information(string message)
         {
-            Trace.TraceInformation(message);
+            Console.Out.WriteLine("INFO: " + message);
         }
 
         public void Information(string fmt, params object[] vars)
         {
-            Trace.TraceInformation(fmt, vars);
+            Console.Out.WriteLine("INFO: " + string.Format(fmt, vars));
         }
 
         public void Information(Exception exception, string fmt, params object[] vars)
         {
-            Trace.TraceInformation(FormatExceptionMessage(exception, fmt, vars));
+            Console.Out.WriteLine("INFO: " + FormatExceptionMessage(exception, fmt, vars));
         }
 
         public void Warning(string message)
         {
-            Trace.TraceWarning(message);
+            Console.Out.WriteLine("WARN: " + message);
         }
 
         public void Warning(string fmt, params object[] vars)
         {
-            Trace.TraceWarning(fmt, vars);
+            Console.Out.WriteLine("WARN: " + string.Format(fmt, vars));
         }
 
         public void Warning(Exception exception, string fmt, params object[] vars)
         {
-            Trace.TraceWarning(FormatExceptionMessage(exception, fmt, vars));
+            Console.Out.WriteLine("WARN: " + FormatExceptionMessage(exception, fmt, vars));
         }
 
         public void Error(string message)
         {
-            Trace.TraceError(message);
+            Console.Error.WriteLine("ERROR: " + message);
         }
 
         public void Error(string fmt, params object[] vars)
         {
-            Trace.TraceError(fmt, vars);
+            Console.Error.WriteLine("ERROR: " + string.Format(fmt, vars));
         }
 
         public void Error(Exception exception, string fmt, params object[] vars)
         {
-            Trace.TraceError(FormatExceptionMessage(exception, fmt, vars));
+            Console.Error.WriteLine("ERROR: " + FormatExceptionMessage(exception, fmt, vars));
         }
 
         public void TraceApi(string componentName, string method, TimeSpan timespan)
@@ -65,7 +64,7 @@ namespace ContosoUniversity.Logging
         public void TraceApi(string componentName, string method, TimeSpan timespan, string properties)
         {
             string message = String.Concat("Component:", componentName, ";Method:", method, ";Timespan:", timespan.ToString(), ";Properties:", properties);
-            Trace.TraceInformation(message);
+            Console.Out.WriteLine("INFO: " + message);
         }
 
         private static string FormatExceptionMessage(Exception exception, string fmt, object[] vars)
