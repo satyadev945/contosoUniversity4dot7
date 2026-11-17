@@ -36,7 +36,8 @@ namespace ContosoUniversity.Controllers
 
             ViewData["CurrentFilter"] = searchString;
 
-            var students = from s in _context.Students
+            // EF Core: explicit AsNoTracking query (no LINQ to SQL lazy loading / LoadWith).
+            var students = from s in _context.Students.AsNoTracking()
                            select s;
 
             if (!string.IsNullOrEmpty(searchString))

@@ -23,6 +23,7 @@ namespace ContosoUniversity.Controllers
 
         public async Task<IActionResult> About()
         {
+            // EF Core LINQ group-by query (translated to SQL by the provider).
             var data = from student in _context.Students
                        group student by student.EnrollmentDate into dataGroup
                        select new EnrollmentDataGroup
