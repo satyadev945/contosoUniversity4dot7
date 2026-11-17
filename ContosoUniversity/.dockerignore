@@ -1,0 +1,39 @@
+# Build outputs
+**/bin/
+**/obj/
+**/publish/
+**/out/
+**/*.pdb
+**/*.cache
+
+# Source control / IDE
+**/.git
+**/.gitignore
+**/.gitattributes
+**/.vs/
+**/.vscode/
+**/.idea/
+**/*.user
+**/*.suo
+**/*.DotSettings
+
+# Temp / logs
+**/*.log
+**/*.tmp
+**/*.temp
+**/TestResults/
+**/node_modules/
+**/npm-debug.log
+
+# Docker / docs
+**/Dockerfile*
+**/.dockerignore
+**/docker-compose*
+**/*.md
+**/LICENSE
+
+# Local secrets / environment
+**/.env
+**/secrets.dev.yaml
+**/values.dev.yaml
+**/appsettings.Development.json

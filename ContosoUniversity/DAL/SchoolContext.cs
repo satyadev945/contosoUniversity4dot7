@@ -1,4 +1,4 @@
-﻿using ContosoUniversity.Models;
+using ContosoUniversity.Models;
 using System.Data.Entity;
 using System.Data.Entity.ModelConfiguration.Conventions;
 
@@ -6,6 +6,10 @@ namespace ContosoUniversity.DAL
 {
     public class SchoolContext : DbContext
     {
+        public SchoolContext(string nameOrConnectionString) : base(nameOrConnectionString)
+        {
+        }
+
         public DbSet<Course> Courses { get; set; }
         public DbSet<Department> Departments { get; set; }
         public DbSet<Enrollment> Enrollments { get; set; }
