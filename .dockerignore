@@ -1,4 +1,3 @@
-# Build output
 **/bin/
 **/obj/
 **/publish/
@@ -6,23 +5,25 @@
 **/*.user
 **/*.suo
 **/*.cache
-
-# IDE / VCS
+**/launchSettings.json
 .git
 .gitignore
 .gitattributes
 .vs/
 .vscode/
 .idea/
-
-# Docs, images and container files not needed at runtime
-README.md
+.DS_Store
+*.md
+**/*.md
 images/
 Dockerfile*
-.dockerignore
+**/Dockerfile*
+docker-compose*.yml
+**/docker-compose*.yml
+**/kubernetes/
+**/scripts/
+**/docs/
 *.sln
-
-# Temp / logs / test artifacts
 **/*.log
 **/*.tmp
 **/TestResults/
