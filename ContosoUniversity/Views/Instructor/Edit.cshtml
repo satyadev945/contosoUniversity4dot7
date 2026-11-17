@@ -1,4 +1,4 @@
-﻿@model ContosoUniversity.Models.Instructor
+@model ContosoUniversity.Models.Instructor
 
 @{
     ViewBag.Title = "Edit";
@@ -9,7 +9,6 @@
 
 @using (Html.BeginForm())
 {
-    @Html.AntiForgeryToken()
     
     <div class="form-horizontal">
         <h4>Instructor</h4>
@@ -54,5 +53,5 @@
 </div>
 
 @section Scripts {
-    @Scripts.Render("~/bundles/jqueryval")
+    <partial name="_ValidationScriptsPartial" />
 }
