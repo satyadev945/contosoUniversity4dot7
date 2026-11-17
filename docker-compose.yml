@@ -10,7 +10,7 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Production
       - ASPNETCORE_URLS=http://+:8080
-      # External SQL Server connection (provided separately, not part of this compose file)
+      # External PostgreSQL connection, e.g. Host=<POSTGRES_HOST>;Port=5432;Database=<POSTGRES_DB>;Username=<POSTGRES_USER>;Password=<POSTGRES_PASSWORD> (provided separately)
       - ConnectionStrings__SchoolContext=${SCHOOL_CONNECTION_STRING:?Set SCHOOL_CONNECTION_STRING}
       - Logging__LogLevel__Default=Information
     volumes:
