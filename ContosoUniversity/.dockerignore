@@ -1,33 +1,29 @@
-# Build output
 **/bin/
 **/obj/
 **/publish/
 **/out/
-# IDE / user files
 .vs/
 .vscode/
 .idea/
 *.user
 *.suo
 *.userprefs
-# Debug symbols and temp artifacts
 *.pdb
 *.tmp
-*.temp
 *.log
-*.cache
-TestResults/
-# Source control
 .git/
 .gitignore
 .gitattributes
-# Docker and docs
-Dockerfile*
-.dockerignore
-docker-compose*
-README.md
+.DS_Store
+**/launchSettings.json
 **/*.md
-# Packages / misc
+**/Dockerfile*
+**/.dockerignore
+**/docker-compose*
+**/kubernetes/
+**/scripts/
+**/docs/
+images/
 packages/
 node_modules/
-**/*.nupkg
+TestResults/

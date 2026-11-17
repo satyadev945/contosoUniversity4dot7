@@ -1,19 +1,34 @@
-# Linux container image for ASP.NET Core (replaces Windows Server Core / IIS image)
-FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
+# syntax=docker/dockerfile:1
+# Build context: repository root (docker build -f ContosoUniversity/Dockerfile .)
+# NOTE: the project targets net8.0 (ASP.NET Core, Linux). The requested Windows image
+# mcr.microsoft.com/dotnet/framework/aspnet:4.7.2 cannot run a net8.0 app, so the matching
+# mcr.microsoft.com/dotnet/aspnet:8.0 runtime is used.
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS builder
 WORKDIR /src
-COPY ContosoUniversity.csproj .
-RUN dotnet restore ContosoUniversity.csproj
-COPY . .
-# Publish without PDB/debug symbols; remove any leftover PDB/XML doc files to keep the final image small
-RUN dotnet publish ContosoUniversity.csproj -c Release -o /app/publish --no-restore -p:DebugType=None -p:DebugSymbols=false -p:GenerateDocumentationFile=false \
-    && find /app/publish -type f \( -name "*.pdb" -o -name "*.tmp" -o -name "*.cs" -o -name "*.csproj" \) -delete
+
+# Restore first for NuGet layer caching
+COPY ContosoUniversity/ContosoUniversity.csproj ContosoUniversity/
+RUN dotnet restore ContosoUniversity/ContosoUniversity.csproj
+
+COPY ContosoUniversity/ ContosoUniversity/
+RUN dotnet build ContosoUniversity/ContosoUniversity.csproj -c Release --no-restore \
+    && dotnet publish ContosoUniversity/ContosoUniversity.csproj -c Release -o /app/publish --no-restore --no-build \
+       -p:DebugType=None -p:DebugSymbols=false
 
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS final
 WORKDIR /app
-COPY --from=build /app/publish .
-ENV ASPNETCORE_URLS=http://+:8080
-# Former Views/Web.config appSettings (webpages:Enabled) now supplied as an environment variable; override via ConfigMap
-ENV webpages__Enabled=false
-# Provide the database connection at runtime, e.g. ConnectionStrings__SchoolContext
+COPY --from=builder /app/publish .
+
+ENV ASPNETCORE_ENVIRONMENT=Production \
+    ASPNETCORE_URLS=http://+:8080 \
+    DOTNET_RUNNING_IN_CONTAINER=true \
+    DOTNET_EnableDiagnostics=0 \
+    TZ=UTC \
+    webpages__Enabled=false
+# Database connection is supplied at runtime via ConnectionStrings__SchoolContext
+
 EXPOSE 8080
+
+# Non-root user (built into the .NET 8 images)
+USER app
 ENTRYPOINT ["dotnet", "ContosoUniversity.dll"]
