@@ -1,0 +1,26 @@
+@model IEnumerable<ContosoUniversity.Models.Department>
+
+@{
+    ViewBag.Title = "Departments";
+}
+
+<h2>Departments</h2>
+<br />
+<table class="table">
+    <tr>
+        <th>Name</th>
+        <th>Budget</th>
+        <th>Start Date</th>
+        <th>Administrator</th>
+    </tr>
+
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>@Html.DisplayFor(modelItem => item.Name)</td>
+            <td>@Html.DisplayFor(modelItem => item.Budget)</td>
+            <td>@Html.DisplayFor(modelItem => item.StartDate)</td>
+            <td>@(item.Administrator != null ? item.Administrator.FullName : string.Empty)</td>
+        </tr>
+    }
+</table>
