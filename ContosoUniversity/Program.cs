@@ -12,7 +12,7 @@ var connectionString = builder.Configuration.GetConnectionString("SchoolContext"
 
 builder.Services.AddDbContext<SchoolContext>(options =>
     options.UseLazyLoadingProxies()
-           .UseSqlServer(connectionString, sql => sql.EnableRetryOnFailure()));
+           .UseNpgsql(connectionString, npgsql => npgsql.EnableRetryOnFailure()));
 
 builder.Services.AddControllersWithViews();
 

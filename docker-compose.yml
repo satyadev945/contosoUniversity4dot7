@@ -10,8 +10,7 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Production
       - ASPNETCORE_URLS=http://+:8080
-      # External SQL Server is provided separately - override with your own connection string
-      - ConnectionStrings__SchoolContext=${SCHOOL_CONNECTION_STRING:-Server=host.docker.internal;Database=ContosoUniversity;User Id=sa;Password=CHANGE_ME;TrustServerCertificate=True}
+      - ConnectionStrings__SchoolContext=${SCHOOL_CONNECTION_STRING:-Host=postgres;Port=5432;Database=ContosoUniversity;Username=${POSTGRES_USER:-postgres};Password=${POSTGRES_PASSWORD:-CHANGE_ME}}
       - Logging__LogLevel__Default=Information
     volumes:
       - ./logs:/app/logs
@@ -21,6 +20,25 @@ services:
       timeout: 5s
       retries: 3
       start_period: 60s
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - app-network
+
+  postgres:
+    image: postgres:15
+    container_name: contosouniversity-postgres
+    environment:
+      - POSTGRES_DB=ContosoUniversity
+      - POSTGRES_USER=${POSTGRES_USER:-postgres}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-CHANGE_ME}
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER:-postgres}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
     restart: unless-stopped
     networks:
       - app-network
