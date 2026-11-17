@@ -162,9 +162,12 @@
     <Compile Include="DAL\SchoolInitializer.cs" />
     <Compile Include="DAL\SchoolInterceptorLogging.cs" />
     <Compile Include="DAL\SchoolInterceptorTransientErrors.cs" />
-    <Compile Include="Global.asax.cs">
-      <DependentUpon>Global.asax</DependentUpon>
-    </Compile>
+    <Compile Include="Middleware\BlockViewsMiddleware.cs" />
+    <Compile Include="Program.cs" />
+    <Compile Include="Security\HtmlSanitizationConfig.cs" />
+    <Compile Include="Security\HtmlSanitizationService.cs" />
+    <Compile Include="Security\SafeSelectList.cs" />
+    <Compile Include="Startup.cs" />
     <Compile Include="Logging\ILogger.cs" />
     <Compile Include="Logging\Logger.cs" />
     <Compile Include="Migrations\201704071734334_InitialCreate.cs" />
@@ -208,7 +211,6 @@
     <Content Include="Content\PagedList.css" />
     <Content Include="favicon.ico" />
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
-    <Content Include="Global.asax" />
     <Content Include="Content\Site.css" />
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
@@ -256,6 +258,10 @@
     <Content Include="Views\Instructor\Details.cshtml" />
     <Content Include="Views\Instructor\Edit.cshtml" />
     <Content Include="Views\Instructor\Index.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="HtmlSanitizer" Version="5.0.376" />
+    <PackageReference Include="AWSSDK.SecretsManager" Version="3.7.100" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

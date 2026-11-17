@@ -1,7 +1,8 @@
 ﻿@model ContosoUniversity.Models.Course
+@using ContosoUniversity.Security
 
 @{
-    ViewBag.Title = "Edit";
+    ViewBag.Title = HtmlSanitizationService.Default.SanitizeToText("Edit");
 }
 
 <h2>Edit</h2>
