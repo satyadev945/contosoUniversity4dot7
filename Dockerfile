@@ -10,7 +10,7 @@ FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS final
 WORKDIR /app
 COPY --from=build /app/publish .
 ENV ASPNETCORE_URLS=http://+:8080
-# Provide at runtime, e.g. ConnectionStrings__SchoolContext="Server=${DB_HOST},${DB_PORT};Database=${DB_NAME};User Id=${DB_USER};Password=${DB_PASSWORD};TrustServerCertificate=True"
+# Provide at runtime, e.g. ConnectionStrings__SchoolContext="Host=${DB_HOST};Port=${DB_PORT};Database=${DB_NAME};Username=${DB_USER};Password=${DB_PASSWORD}"
 ENV ConnectionStrings__SchoolContext=""
 EXPOSE 8080
 ENTRYPOINT ["dotnet", "ContosoUniversity.dll"]

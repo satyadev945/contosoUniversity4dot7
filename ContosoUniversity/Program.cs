@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 var builder = WebApplication.CreateBuilder(args);
 
 // Connection string is supplied via configuration / environment variable:
-//   ConnectionStrings__SchoolContext=Server=${DB_HOST},${DB_PORT};Database=${DB_NAME};User Id=${DB_USER};Password=${DB_PASSWORD};TrustServerCertificate=True
+//   ConnectionStrings__SchoolContext=Host=${DB_HOST};Port=${DB_PORT};Database=${DB_NAME};Username=${DB_USER};Password=${DB_PASSWORD}
 var connectionString = builder.Configuration.GetConnectionString("SchoolContext");
 if (string.IsNullOrWhiteSpace(connectionString))
 {
@@ -12,7 +12,7 @@ if (string.IsNullOrWhiteSpace(connectionString))
 }
 
 builder.Services.AddDbContext<SchoolContext>(options =>
-    options.UseSqlServer(connectionString, sql => sql.EnableRetryOnFailure()));
+    options.UseNpgsql(connectionString, npgsql => npgsql.EnableRetryOnFailure()));
 
 builder.Services.AddControllersWithViews();
 builder.Services.AddHealthChecks();

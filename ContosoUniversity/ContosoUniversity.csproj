@@ -11,7 +11,7 @@
 
   <!-- Iteration 2: build reported 0 compilation errors; no functional changes required. -->
   <ItemGroup>
-    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.8" />
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.8" />
   </ItemGroup>
 
 </Project>

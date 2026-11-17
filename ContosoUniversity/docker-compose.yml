@@ -11,8 +11,8 @@ services:
       ASPNETCORE_ENVIRONMENT: Production
       ASPNETCORE_URLS: http://+:8080
       TZ: UTC
-      # External SQL Server is provided separately; set these before running
-      ConnectionStrings__SchoolContext: "Server=${DB_HOST},${DB_PORT:-1433};Database=${DB_NAME:-ContosoUniversity};User Id=${DB_USER};Password=${DB_PASSWORD};TrustServerCertificate=True"
+      # External PostgreSQL is provided separately; set these before running
+      ConnectionStrings__SchoolContext: "Host=${DB_HOST};Port=${DB_PORT:-5432};Database=${DB_NAME:-ContosoUniversity};Username=${DB_USER};Password=${DB_PASSWORD}"
       SKIP_DB_INIT: "${SKIP_DB_INIT:-false}"
     volumes:
       - ./logs:/app/logs
