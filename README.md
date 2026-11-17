@@ -1,6 +1,6 @@
 ﻿# University Admin Website 
 
-## Asp.net MVC 5 with Entity Framework
+## ASP.NET Core MVC (.NET 8, Linux containers) with Entity Framework Core
 
 Full CRUD operation ASP.NET MVC 5 framework intergrated with Entity Framework 6 SQL database. 
 Add edit update and delete 

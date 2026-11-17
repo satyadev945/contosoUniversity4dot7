@@ -1,0 +1,30 @@
+# Build output
+**/bin/
+**/obj/
+**/publish/
+**/*.pdb
+**/*.user
+**/*.suo
+**/*.cache
+
+# IDE / VCS
+.git
+.gitignore
+.gitattributes
+.vs/
+.vscode/
+.idea/
+
+# Docs, images and container files not needed at runtime
+README.md
+images/
+Dockerfile*
+.dockerignore
+*.sln
+
+# Temp / logs / test artifacts
+**/*.log
+**/*.tmp
+**/TestResults/
+**/App_Data/*.mdf
+**/App_Data/*.ldf
