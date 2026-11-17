@@ -37,7 +37,7 @@ namespace ContosoUniversity.Controllers
 
             ViewBag.CurrentFilter = HtmlSanitizationService.Default.SanitizeToText(searchString);
 
-            var students = from s in db.Students
+            var students = from s in db.Students.AsNoTracking()
                            select s;
 
             if (!string.IsNullOrEmpty(searchString))
