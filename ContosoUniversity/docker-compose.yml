@@ -12,7 +12,7 @@ services:
       ASPNETCORE_ENVIRONMENT: Production
       ASPNETCORE_URLS: http://+:8080
       TZ: UTC
-      # External SQL Server - provide the real value via shell env or .env file
+      # External PostgreSQL (Host=...;Database=...;Username=...;Password=...) - provide the real value via shell env or .env file
       ConnectionStrings__SchoolContext: ${SCHOOL_DB_CONNECTION:?Set SCHOOL_DB_CONNECTION}
     volumes:
       - ./config:/app/config:ro

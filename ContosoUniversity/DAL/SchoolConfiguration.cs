@@ -8,7 +8,7 @@ namespace ContosoUniversity.DAL
         public SchoolConfiguration()
         {
             SetDefaultConnectionFactory(new System.Data.Entity.Infrastructure.SqlConnectionFactory());
-            SetExecutionStrategy("System.Data.SqlClient", () => new SqlAzureExecutionStrategy());
+            SetExecutionStrategy("Npgsql", () => new SqlAzureExecutionStrategy());
         }
     }
 }
