@@ -13,7 +13,7 @@ namespace ContosoUniversity.Models
         public string Name { get; set; }
 
         [DataType(DataType.Currency)]
-        [Column(TypeName = "money")]
+        [Column(TypeName = "numeric(19,4)")]
         public decimal Budget { get; set; }
 
         [DataType(DataType.Date)]
@@ -23,7 +23,7 @@ namespace ContosoUniversity.Models
 
         public int? InstructorID { get; set; }
 
-        public virtual Instructor Administrator { get; set; }
-        public virtual ICollection<Course> Courses { get; set; }
+        public Instructor Administrator { get; set; }
+        public ICollection<Course> Courses { get; set; }
     }
 }
