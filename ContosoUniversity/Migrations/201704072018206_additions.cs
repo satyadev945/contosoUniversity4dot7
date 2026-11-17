@@ -13,7 +13,7 @@ namespace ContosoUniversity.Migrations
                     {
                         DepartmentID = c.Int(nullable: false, identity: true),
                         Name = c.String(maxLength: 50),
-                        Budget = c.Decimal(nullable: false, storeType: "money"),
+                        Budget = c.Decimal(nullable: false, storeType: "numeric(19,4)"),
                         StartDate = c.DateTime(nullable: false),
                         InstructorID = c.Int(),
                     })

@@ -46,6 +46,7 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="HtmlSanitizer" Version="8.0.865" />
+    <PackageReference Include="Npgsql" Version="8.0.3" />
     <PackageReference Include="Google.Cloud.SecretManager.V1" Version="2.4.0" />
     <PackageReference Include="System.Text.Json" Version="6.0.0" />
   </ItemGroup>
