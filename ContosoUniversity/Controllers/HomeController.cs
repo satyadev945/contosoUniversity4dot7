@@ -20,6 +20,7 @@ namespace ContosoUniversity.Controllers
 
         public IActionResult Index()
         {
+            // EF Core: no LINQ to SQL DataLoadOptions/LoadWith; use Include() where related data is needed.
             return View();
         }
 

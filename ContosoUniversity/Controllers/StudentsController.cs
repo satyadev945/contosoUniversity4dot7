@@ -37,6 +37,8 @@ namespace ContosoUniversity.Controllers
 
             ViewBag.CurrentFilter = searchString;
 
+            // EF Core: navigation data is loaded explicitly via Include()/ThenInclude(), not lazily.
+
             var students = from s in _context.Students.AsNoTracking()
                            select s;
 
