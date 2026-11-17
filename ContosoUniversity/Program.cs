@@ -19,7 +19,7 @@ var connectionString = builder.Configuration.GetConnectionString("SchoolContext"
 builder.Services.AddSingleton<ILogger, Logger>();
 builder.Services.AddSingleton<SchoolInterceptorLogging>();
 builder.Services.AddDbContext<SchoolContext>((sp, options) =>
-    options.UseSqlServer(connectionString, sql => sql.EnableRetryOnFailure())
+    options.UseNpgsql(connectionString, npgsql => npgsql.EnableRetryOnFailure())
            .AddInterceptors(sp.GetRequiredService<SchoolInterceptorLogging>()));
 
 builder.Services.AddControllersWithViews();

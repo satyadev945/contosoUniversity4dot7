@@ -16,7 +16,7 @@ ENV ASPNETCORE_ENVIRONMENT=Production \
     DOTNET_gcServer=0 \
     DOTNET_EnableDiagnostics=0 \
     TZ=UTC
-# Supply at runtime: ConnectionStrings__SchoolContext="Server=<host>;Database=<db>;User Id=<user>;Password=<pwd>;TrustServerCertificate=True"
+# Supply at runtime: ConnectionStrings__SchoolContext="Host=<host>;Database=<db>;Username=<user>;Password=<pwd>"
 EXPOSE 8080
 # Non-root user (built into the official .NET 8 images)
 USER $APP_UID
