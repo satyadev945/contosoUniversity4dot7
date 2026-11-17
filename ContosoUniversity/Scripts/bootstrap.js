@@ -223,11 +223,17 @@ if (!jQuery) { throw new Error("Bootstrap requires jQuery") }
     $el[val](data[state] || this.options[state])
 
     // push to event loop to allow forms to submit
-    setTimeout(function () {
+    // (Promise-based deferral replaces the setTimeout callback; still a macrotask)
+    var applyState = function () {
       state == 'loadingText' ?
         $el.addClass(d).attr(d, d) :
         $el.removeClass(d).removeAttr(d);
-    }, 0)
+    }
+    if (typeof Promise === 'function') {
+      new Promise(function (resolve) { setTimeout(resolve, 0) }).then(applyState)
+    } else {
+      setTimeout(applyState, 0)
+    }
   }
 
   Button.prototype.toggle = function () {

@@ -1,8 +1,12 @@
-﻿using ContosoUniversity.DAL;
+﻿using ContosoUniversity.Caching;
+using ContosoUniversity.DAL;
+using ContosoUniversity.Security;
 using ContosoUniversity.ViewModels;
 using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
 
@@ -12,30 +16,37 @@ namespace ContosoUniversity.Controllers
     {
 
         private SchoolContext db = new SchoolContext();
+        private readonly IDataCache cache = new RedisDataCache();
 
-        public ActionResult Index()
+        public const string EnrollmentStatsCacheKey = "home:enrollment-stats";
+
+        public Task<ActionResult> Index()
         {
-            return View();
+            return Task.FromResult<ActionResult>(View());
         }
 
-        public ActionResult About()
+        public async Task<ActionResult> About()
         {
-            IQueryable<EnrollmentDataGroup> data = from student in db.Students
-                                                   group student by student.EnrollmentDate into dataGroup
-                                                   select new EnrollmentDataGroup()
-                                                   {
-                                                       EnrollmentDate = dataGroup.Key,
-                                                       StudentCount = dataGroup.Count()
-                                                   };
+            // Aggregated statistics are served from Azure Cache for Redis; the database query
+            // runs asynchronously only on a cache miss.
+            var data = await cache.GetOrCreateAsync(EnrollmentStatsCacheKey, async () =>
+                await (from student in db.Students
+                       group student by student.EnrollmentDate into dataGroup
+                       select new EnrollmentDataGroup()
+                       {
+                           EnrollmentDate = dataGroup.Key,
+                           StudentCount = dataGroup.Count()
+                       }).ToListAsync(),
+                TimeSpan.FromMinutes(5));
 
-            return View(data.ToList());
+            return View(data);
         }
 
-        public ActionResult Contact()
+        public Task<ActionResult> Contact()
         {
-            ViewBag.Message = "Your contact page.";
+            ViewBag.Message = HtmlSanitization.Sanitize("Your contact page.");
 
-            return View();
+            return Task.FromResult<ActionResult>(View());
         }
 
         protected override void Dispose(bool disposing)
