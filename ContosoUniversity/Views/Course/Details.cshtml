@@ -1,4 +1,4 @@
-﻿@model ContosoUniversity.Models.Course
+@model ContosoUniversity.Models.Course
 
 @{
     ViewBag.Title = "Details";
@@ -40,5 +40,5 @@
     <button class="btn btn-info" onClick="location.href =' @Url.Action("Edit", "Course", new { id = Model.CourseID })';return false;">Edit</button>
 
   
-    @Html.ActionLink("Back to List", "Index")
+    <a asp-action="Index">Back to List</a>
 </p>
