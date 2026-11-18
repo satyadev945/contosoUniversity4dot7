@@ -1,9 +1,7 @@
-# Build output
 **/bin/
 **/obj/
 **/publish/
 **/out/
-# Debug symbols and temp artifacts
 **/*.pdb
 **/*.user
 **/*.suo
@@ -11,19 +9,21 @@
 **/*.tmp
 **/*.cache
 **/TestResults/
-# IDE / tooling
 .vs/
 .vscode/
 .idea/
-# Source control
 .git/
 .gitignore
 .gitattributes
-# Docker files
-Dockerfile*
-.dockerignore
-docker-compose*
-# Docs and misc
+**/launchSettings.json
+**/Dockerfile*
+**/.dockerignore
+**/docker-compose*
 **/*.md
 **/node_modules/
 **/packages/
+.DS_Store
+ContosoUniversity/kubernetes/
+ContosoUniversity/scripts/
+ContosoUniversity/docs/
+images/
