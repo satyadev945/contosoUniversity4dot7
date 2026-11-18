@@ -1,4 +1,4 @@
-﻿@model ContosoUniversity.Models.Instructor
+@model ContosoUniversity.Models.Instructor
 
 @{
     ViewBag.Title = "Delete";
@@ -46,7 +46,6 @@
     </dl>
 
     @using (Html.BeginForm()) {
-        @Html.AntiForgeryToken()
 
         <div class="form-actions no-color">
             <input class="btn btn-danger" type="submit" value="Delete" class="btn btn-default" /> |
