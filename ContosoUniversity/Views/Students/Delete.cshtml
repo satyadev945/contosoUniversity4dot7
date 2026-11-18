@@ -1,11 +1,11 @@
 ﻿@model ContosoUniversity.Models.Student
 
 @{
-    ViewBag.Title = "Delete";
+    ViewBag.Title = ContosoUniversity.Security.HtmlSanitizerService.Instance.Sanitize("Delete");
 }
 
 <h2>Delete</h2>
-<p class="error">@ViewBag.ErrorMessage</p>
+<p class="error">@ContosoUniversity.Security.HtmlSanitizerService.Instance.Sanitize((string)ViewBag.ErrorMessage)</p>
 <h3>Are you sure you want to delete this?</h3>
 <div>
     <h4>Student</h4>

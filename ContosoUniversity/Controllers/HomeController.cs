@@ -1,8 +1,12 @@
-﻿using ContosoUniversity.DAL;
+﻿using ContosoUniversity.Caching;
+using ContosoUniversity.DAL;
+using ContosoUniversity.Security;
 using ContosoUniversity.ViewModels;
 using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
 
@@ -12,14 +16,26 @@ namespace ContosoUniversity.Controllers
     {
 
         private SchoolContext db = new SchoolContext();
+        private readonly ICacheService cache = RedisCacheService.Instance;
+        private readonly IHtmlSanitizerService sanitizer = HtmlSanitizerService.Instance;
+
+        private const string EnrollmentStatsCacheKey = "contoso:home:enrollment-stats";
+        private static readonly TimeSpan EnrollmentStatsCacheTtl = TimeSpan.FromSeconds(60);
 
         public ActionResult Index()
         {
             return View();
         }
 
-        public ActionResult About()
+        public async Task<ActionResult> About()
         {
+            // Non-blocking read through AWS ElastiCache (Redis); falls back to the database on a miss.
+            var cached = await cache.GetAsync<List<EnrollmentDataGroup>>(EnrollmentStatsCacheKey);
+            if (cached != null)
+            {
+                return View(cached);
+            }
+
             IQueryable<EnrollmentDataGroup> data = from student in db.Students
                                                    group student by student.EnrollmentDate into dataGroup
                                                    select new EnrollmentDataGroup()
@@ -28,12 +44,14 @@ namespace ContosoUniversity.Controllers
                                                        StudentCount = dataGroup.Count()
                                                    };
 
-            return View(data.ToList());
+            var result = await data.ToListAsync();
+            await cache.SetAsync(EnrollmentStatsCacheKey, result, EnrollmentStatsCacheTtl);
+            return View(result);
         }
 
         public ActionResult Contact()
         {
-            ViewBag.Message = "Your contact page.";
+            ViewBag.Message = sanitizer.Sanitize("Your contact page.");
 
             return View();
         }
