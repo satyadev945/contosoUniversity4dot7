@@ -31,7 +31,8 @@ namespace ContosoUniversity.Models
             get { return LastName + ", " + FirstMidName; }
         }
 
-        public virtual ICollection<Course> Courses { get; set; }
-        public virtual OfficeAssignment OfficeAssignment { get; set; }
+        // Navigation properties; load explicitly with Include()/ThenInclude() in EF Core
+        public ICollection<Course> Courses { get; set; }
+        public OfficeAssignment OfficeAssignment { get; set; }
     }
 }

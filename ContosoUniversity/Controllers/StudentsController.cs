@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Data.Entity;
+using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
@@ -11,7 +11,6 @@ using ContosoUniversity.DAL;
 using ContosoUniversity.Models;
 using ContosoUniversity.Security;
 using PagedList;
-using System.Data.Entity.Infrastructure;
 
 namespace ContosoUniversity.Controllers
 {
