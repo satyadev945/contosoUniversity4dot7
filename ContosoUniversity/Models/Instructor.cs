@@ -1,5 +1,3 @@
-﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -20,8 +18,9 @@ namespace ContosoUniversity.Models
         [StringLength(50)]
         public string FirstMidName { get; set; }
 
+        // Display uses dd-MM-yyyy; edit mode uses the ISO value required by <input type="date">.
         [DataType(DataType.Date)]
-        [DisplayFormat(DataFormatString = "{0:dd-MM-yyyy}", ApplyFormatInEditMode = true)]
+        [DisplayFormat(DataFormatString = "{0:dd-MM-yyyy}", ApplyFormatInEditMode = false)]
         [Display(Name = "Hire Date")]
         public DateTime HireDate { get; set; }
 
@@ -31,7 +30,7 @@ namespace ContosoUniversity.Models
             get { return LastName + ", " + FirstMidName; }
         }
 
-        public virtual ICollection<Course> Courses { get; set; }
+        public virtual ICollection<Course> Courses { get; set; } = new List<Course>();
         public virtual OfficeAssignment OfficeAssignment { get; set; }
     }
 }
