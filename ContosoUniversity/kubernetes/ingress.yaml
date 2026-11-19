@@ -1,0 +1,23 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: contoso-university-ingress
+  namespace: contoso-university
+  labels:
+    app: contoso-university
+  annotations:
+    kubernetes.io/ingress.class: azure/application-gateway
+    appgw.ingress.kubernetes.io/health-probe-path: /health
+    appgw.ingress.kubernetes.io/request-timeout: "60"
+spec:
+  rules:
+    - host: "{{INGRESS_HOST}}"
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: contoso-university-service
+                port:
+                  number: 80

@@ -1,0 +1,29 @@
+services:
+  contoso-university:
+    image: contosouniversity:latest
+    container_name: contoso-university
+    build:
+      context: ..
+      dockerfile: ContosoUniversity/Dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      ASPNETCORE_ENVIRONMENT: "Production"
+      ASPNETCORE_URLS: "http://+:8080"
+      TZ: "UTC"
+      # External SQL Server connection (provided separately, not part of this compose file)
+      ConnectionStrings__SchoolContext: "${SCHOOL_CONNECTION_STRING:-}"
+      APPLICATIONINSIGHTS_CONNECTION_STRING: "${APPLICATIONINSIGHTS_CONNECTION_STRING:-}"
+    healthcheck:
+      test: ["CMD", "bash", "-c", "exec 3<>/dev/tcp/127.0.0.1/8080"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 40s
+    restart: unless-stopped
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
