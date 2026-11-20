@@ -1,4 +1,4 @@
-﻿@model ContosoUniversity.Models.Student
+@model ContosoUniversity.Models.Student
 
 @{
     ViewBag.Title = "Details";
@@ -44,7 +44,7 @@
                     <th>Course Title</th>
                     <th>Grade</th>
                 </tr>
-                @foreach (var item in Model.Enrollments)
+                @foreach (var item in Model.Enrollments ?? new List<Enrollment>())
                 {
                     <tr>
                         <td>
@@ -61,6 +61,6 @@
 
 </div>
 <p>
-    @Html.ActionLink("Edit", "Edit", new { id = Model.ID }) |
-    @Html.ActionLink("Back to List", "Index")
+    <a asp-action="Edit" asp-route-id="@Model.ID">Edit</a> |
+    <a asp-action="Index">Back to List</a>
 </p>
