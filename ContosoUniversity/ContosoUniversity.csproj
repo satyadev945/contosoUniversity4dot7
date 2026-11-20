@@ -150,7 +150,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="HtmlSanitizer" Version="8.0.865" />
+    <PackageReference Include="Npgsql" Version="8.0.3" />
+    <PackageReference Include="HtmlSanitizer"Version="8.0.865" />
     <PackageReference Include="AWSSDK.SecretsManager" Version="3.7.400.30" />
     <PackageReference Include="AWSSDK.SimpleSystemsManagement" Version="3.7.400.30" />
     <PackageReference Include="AWSSDK.DynamoDBv2" Version="3.7.400.30" />

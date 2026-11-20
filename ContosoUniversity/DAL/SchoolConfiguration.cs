@@ -1,5 +1,4 @@
 ﻿using System.Data.Entity;
-using System.Data.Entity.SqlServer;
 
 namespace ContosoUniversity.DAL
 {
@@ -7,7 +6,7 @@ namespace ContosoUniversity.DAL
     {
         public SchoolConfiguration()
         {
-            SetExecutionStrategy("System.Data.SqlClient", () => new SqlAzureExecutionStrategy());
+            SetExecutionStrategy("Npgsql", () => new DefaultExecutionStrategy());
         }
     }
 }
