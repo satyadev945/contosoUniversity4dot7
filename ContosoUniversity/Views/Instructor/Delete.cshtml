@@ -1,4 +1,4 @@
-﻿@model ContosoUniversity.Models.Instructor
+@model Instructor
 
 @{
     ViewBag.Title = "Delete";
@@ -11,46 +11,23 @@
     <h4>Instructor</h4>
     <hr />
     <dl class="dl-horizontal">
-        <dt>
-            @Html.DisplayNameFor(model => model.OfficeAssignment.Location)
-        </dt>
+        <dt>@Html.DisplayNameFor(model => model.OfficeAssignment!.Location)</dt>
+        <dd>@Html.DisplayFor(model => model.OfficeAssignment!.Location)</dd>
 
-        <dd>
-            @Html.DisplayFor(model => model.OfficeAssignment.Location)
-        </dd>
+        <dt>@Html.DisplayNameFor(model => model.LastName)</dt>
+        <dd>@Html.DisplayFor(model => model.LastName)</dd>
 
-        <dt>
-            @Html.DisplayNameFor(model => model.LastName)
-        </dt>
+        <dt>@Html.DisplayNameFor(model => model.FirstMidName)</dt>
+        <dd>@Html.DisplayFor(model => model.FirstMidName)</dd>
 
-        <dd>
-            @Html.DisplayFor(model => model.LastName)
-        </dd>
-
-        <dt>
-            @Html.DisplayNameFor(model => model.FirstMidName)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.FirstMidName)
-        </dd>
-
-        <dt>
-            @Html.DisplayNameFor(model => model.HireDate)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.HireDate)
-        </dd>
-
+        <dt>@Html.DisplayNameFor(model => model.HireDate)</dt>
+        <dd>@Html.DisplayFor(model => model.HireDate)</dd>
     </dl>
 
-    @using (Html.BeginForm()) {
-        @Html.AntiForgeryToken()
-
+    <form asp-action="Delete" asp-route-id="@Model.ID">
         <div class="form-actions no-color">
-            <input class="btn btn-danger" type="submit" value="Delete" class="btn btn-default" /> |
-            @Html.ActionLink("Back to List", "Index")
+            <input class="btn btn-danger" type="submit" value="Delete" /> |
+            <a asp-action="Index">Back to List</a>
         </div>
-    }
+    </form>
 </div>

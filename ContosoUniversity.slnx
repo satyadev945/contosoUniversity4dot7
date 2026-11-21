@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="ContosoUniversity.Tests/ContosoUniversity.Tests.csproj" />
+  <Project Path="ContosoUniversity/ContosoUniversity.csproj" />
+</Solution>
