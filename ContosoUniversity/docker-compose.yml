@@ -1,0 +1,30 @@
+# Run from the ContosoUniversity directory:
+#   SCHOOL_DB_CONNECTION="Server=...;Database=...;User Id=...;Password=...;TrustServerCertificate=True" docker compose up --build
+services:
+  contosouniversity:
+    image: contosouniversity:latest
+    build:
+      context: ..
+      dockerfile: ContosoUniversity/Dockerfile
+    container_name: contosouniversity
+    ports:
+      - "8080:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_URLS=http://+:8080
+      - TZ=UTC
+      - SCHOOL_DB_CONNECTION=${SCHOOL_DB_CONNECTION:?Set SCHOOL_DB_CONNECTION to your external SQL Server connection string}
+    volumes:
+      - app-logs:/app/logs
+    networks:
+      - app-network
+    restart: unless-stopped
+    # Health endpoint: http://localhost:8080/health (the aspnet image ships no curl/wget,
+    # so health is probed by the platform - Kubernetes - rather than inside the container).
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  app-logs:
