@@ -124,6 +124,18 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Reference Include="Azure.Identity">
+      <HintPath>..\packages\Azure.Identity.1.8.2\lib\netstandard2.0\Azure.Identity.dll</HintPath>
+    </Reference>
+    <Reference Include="Azure.Security.KeyVault.Secrets">
+      <HintPath>..\packages\Azure.Security.KeyVault.Secrets.4.5.0\lib\netstandard2.0\Azure.Security.KeyVault.Secrets.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.Configuration.AzureAppConfiguration">
+      <HintPath>..\packages\Microsoft.Extensions.Configuration.AzureAppConfiguration.6.1.1\lib\netstandard2.0\Microsoft.Extensions.Configuration.AzureAppConfiguration.dll</HintPath>
+    </Reference>
+    <Reference Include="HtmlSanitizer">
+      <HintPath>..\packages\HtmlSanitizer.5.0.372\lib\net45\HtmlSanitizer.dll</HintPath>
+    </Reference>
     <Reference Include="Newtonsoft.Json">
       <HintPath>..\packages\Newtonsoft.Json.6.0.4\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
@@ -162,9 +174,12 @@
     <Compile Include="DAL\SchoolInitializer.cs" />
     <Compile Include="DAL\SchoolInterceptorLogging.cs" />
     <Compile Include="DAL\SchoolInterceptorTransientErrors.cs" />
-    <Compile Include="Global.asax.cs">
-      <DependentUpon>Global.asax</DependentUpon>
-    </Compile>
+    <Compile Include="Security\ContentSecurityPolicyMiddleware.cs" />
+    <Compile Include="Security\HtmlSanitizationPolicy.cs" />
+    <Compile Include="Security\HtmlSanitizerProvider.cs" />
+    <Compile Include="Hosting\ApplicationInitializationHostedService.cs" />
+    <Compile Include="Program.cs" />
+    <Compile Include="Startup.cs" />
     <Compile Include="Logging\ILogger.cs" />
     <Compile Include="Logging\Logger.cs" />
     <Compile Include="Migrations\201704071734334_InitialCreate.cs" />
@@ -208,7 +223,6 @@
     <Content Include="Content\PagedList.css" />
     <Content Include="favicon.ico" />
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
-    <Content Include="Global.asax" />
     <Content Include="Content\Site.css" />
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
@@ -228,11 +242,16 @@
     <Content Include="Scripts\respond.js" />
     <Content Include="Scripts\respond.min.js" />
     <Content Include="Web.config" />
-    <Content Include="Web.Debug.config">
-      <DependentUpon>Web.config</DependentUpon>
+    <Content Include="appsettings.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Web.Release.config">
-      <DependentUpon>Web.config</DependentUpon>
+    <Content Include="appsettings.Development.json">
+      <DependentUpon>appsettings.json</DependentUpon>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="appsettings.Production.json">
+      <DependentUpon>appsettings.json</DependentUpon>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Views\Web.config" />
     <Content Include="Views\_ViewStart.cshtml" />

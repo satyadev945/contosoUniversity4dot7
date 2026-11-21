@@ -2,9 +2,12 @@
 using ContosoUniversity.ViewModels;
 using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
 using System.Web;
+using System.Threading.Tasks;
 using System.Web.Mvc;
+using ContosoUniversity.Security;
 
 namespace ContosoUniversity.Controllers
 {
@@ -13,12 +16,12 @@ namespace ContosoUniversity.Controllers
 
         private SchoolContext db = new SchoolContext();
 
-        public ActionResult Index()
+        public Task<ActionResult> Index()
         {
-            return View();
+            return Task.FromResult<ActionResult>(View());
         }
 
-        public ActionResult About()
+        public async Task<ActionResult> About()
         {
             IQueryable<EnrollmentDataGroup> data = from student in db.Students
                                                    group student by student.EnrollmentDate into dataGroup
@@ -28,14 +31,14 @@ namespace ContosoUniversity.Controllers
                                                        StudentCount = dataGroup.Count()
                                                    };
 
-            return View(data.ToList());
+            return View(await data.ToListAsync());
         }
 
-        public ActionResult Contact()
+        public Task<ActionResult> Contact()
         {
-            ViewBag.Message = "Your contact page.";
+            ViewBag.Message = HtmlSanitizerProvider.SanitizeText("Your contact page.");
 
-            return View();
+            return Task.FromResult<ActionResult>(View());
         }
 
         protected override void Dispose(bool disposing)
