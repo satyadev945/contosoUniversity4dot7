@@ -2,7 +2,7 @@
 using ContosoUniversity.ViewModels;
 using System;
 using System.Collections.Generic;
-using System.Data.Entity;
+using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using System.Web;
 using System.Threading.Tasks;
@@ -23,7 +23,7 @@ namespace ContosoUniversity.Controllers
 
         public async Task<ActionResult> About()
         {
-            IQueryable<EnrollmentDataGroup> data = from student in db.Students
+            IQueryable<EnrollmentDataGroup> data = from student in db.Students.AsNoTracking()
                                                    group student by student.EnrollmentDate into dataGroup
                                                    select new EnrollmentDataGroup()
                                                    {

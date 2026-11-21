@@ -32,6 +32,7 @@ namespace ContosoUniversity.Models
         }
 
         public virtual ICollection<Course> Courses { get; set; }
+        [InverseProperty("Instructor")]
         public virtual OfficeAssignment OfficeAssignment { get; set; }
     }
 }

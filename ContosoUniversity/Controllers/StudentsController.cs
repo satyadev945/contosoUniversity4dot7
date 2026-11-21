@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Data.Entity;
+using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using System.Net;
 using System.Web;
@@ -37,7 +37,7 @@ namespace ContosoUniversity.Controllers
 
             ViewBag.CurrentFilter = HtmlSanitizerProvider.SanitizeText(searchString);
 
-            var students = from s in db.Students
+            var students = from s in db.Students.AsNoTracking()
                            select s;
 
             if (!string.IsNullOrEmpty(searchString))

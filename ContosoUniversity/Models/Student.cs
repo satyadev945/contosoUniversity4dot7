@@ -34,6 +34,7 @@ namespace ContosoUniversity.Models
             }
         }
 
+        [InverseProperty("Student")]
         public virtual ICollection<Enrollment> Enrollments { get; set; }
     }
 }
