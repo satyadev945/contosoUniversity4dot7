@@ -13,7 +13,7 @@ services:
       - ASPNETCORE_ENVIRONMENT=Production
       - ASPNETCORE_URLS=http://+:8080
       - TZ=UTC
-      - SCHOOL_DB_CONNECTION=${SCHOOL_DB_CONNECTION:?Set SCHOOL_DB_CONNECTION to your external SQL Server connection string}
+      - SCHOOL_DB_CONNECTION=${SCHOOL_DB_CONNECTION:?Set SCHOOL_DB_CONNECTION to your PostgreSQL connection string (Host=...;Database=...;Username=...;Password=...)}
     volumes:
       - app-logs:/app/logs
     networks:

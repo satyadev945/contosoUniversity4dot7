@@ -8,7 +8,7 @@ namespace ContosoUniversity.Migrations
         public override void Up()
         {
             CreateTable(
-                "dbo.Course",
+                "Course",
                 c => new
                     {
                         CourseID = c.Int(nullable: false),
@@ -18,7 +18,7 @@ namespace ContosoUniversity.Migrations
                 .PrimaryKey(t => t.CourseID);
             
             CreateTable(
-                "dbo.Enrollment",
+                "Enrollment",
                 c => new
                     {
                         EnrollmentID = c.Int(nullable: false, identity: true),
@@ -27,13 +27,13 @@ namespace ContosoUniversity.Migrations
                         Grade = c.Int(),
                     })
                 .PrimaryKey(t => t.EnrollmentID)
-                .ForeignKey("dbo.Course", t => t.CourseID, cascadeDelete: true)
-                .ForeignKey("dbo.Student", t => t.StudentID, cascadeDelete: true)
+                .ForeignKey("Course", t => t.CourseID, cascadeDelete: true)
+                .ForeignKey("Student", t => t.StudentID, cascadeDelete: true)
                 .Index(t => t.CourseID)
                 .Index(t => t.StudentID);
             
             CreateTable(
-                "dbo.Student",
+                "Student",
                 c => new
                     {
                         ID = c.Int(nullable: false, identity: true),
@@ -47,13 +47,13 @@ namespace ContosoUniversity.Migrations
         
         public override void Down()
         {
-            DropForeignKey("dbo.Enrollment", "StudentID", "dbo.Student");
-            DropForeignKey("dbo.Enrollment", "CourseID", "dbo.Course");
-            DropIndex("dbo.Enrollment", new[] { "StudentID" });
-            DropIndex("dbo.Enrollment", new[] { "CourseID" });
-            DropTable("dbo.Student");
-            DropTable("dbo.Enrollment");
-            DropTable("dbo.Course");
+            DropForeignKey("Enrollment", "StudentID", "Student");
+            DropForeignKey("Enrollment", "CourseID", "Course");
+            DropIndex("Enrollment", new[] { "StudentID" });
+            DropIndex("Enrollment", new[] { "CourseID" });
+            DropTable("Student");
+            DropTable("Enrollment");
+            DropTable("Course");
         }
     }
 }

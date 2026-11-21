@@ -39,7 +39,7 @@ spec:
               value: "http://+:8080"
             - name: TZ
               value: "UTC"
-            # External SQL Server connection string; Secret is created by scripts/deploy-image.*
+            # External PostgreSQL connection string; Secret is created by scripts/deploy-image.*
             - name: SCHOOL_DB_CONNECTION
               valueFrom:
                 secretKeyRef:
