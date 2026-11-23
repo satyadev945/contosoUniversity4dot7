@@ -3,6 +3,7 @@ using ContosoUniversity.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
@@ -25,7 +26,7 @@ namespace ContosoUniversity.Controllers
 
         public IActionResult About()
         {
-            IQueryable<EnrollmentDataGroup> data = from student in db.Students
+            IQueryable<EnrollmentDataGroup> data = from student in db.Students.AsNoTracking()
                                                    group student by student.EnrollmentDate into dataGroup
                                                    select new EnrollmentDataGroup()
                                                    {

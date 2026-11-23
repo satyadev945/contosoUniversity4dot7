@@ -21,7 +21,7 @@
   <ItemGroup>
     <!-- EF6 (cross-platform build for .NET 6+) keeps the existing DAL/migrations working on Linux -->
     <PackageReference Include="EntityFramework" Version="6.5.1" />
-    <PackageReference Include="System.Data.SqlClient" Version="4.8.6" />
+    <PackageReference Include="Npgsql" Version="8.0.3" />
     <PackageReference Include="X.PagedList.Mvc.Core" Version="8.4.7" />
     <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.22.0" />
   </ItemGroup>
