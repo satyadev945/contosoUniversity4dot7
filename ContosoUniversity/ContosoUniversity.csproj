@@ -19,7 +19,7 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.23.0" />
-    <PackageReference Include="System.Security.Cryptography.Pkcs" Version="10.0.0" />
+    <PackageReference Include="System.Security.Cryptography.Pkcs" Version="10.0.8" />
     <PackageReference Include="X.PagedList.Mvc.Core" Version="10.5.7" />
     <PackageReference Include="X.PagedList.EF" Version="10.5.7" />
   </ItemGroup>
