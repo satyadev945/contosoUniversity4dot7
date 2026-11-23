@@ -1,10 +1,13 @@
 ﻿using ContosoUniversity.DAL;
+using ContosoUniversity.Security;
 using ContosoUniversity.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Data.Entity;
 using System.Web;
 using System.Web.Mvc;
+using System.Threading.Tasks;
 
 namespace ContosoUniversity.Controllers
 {
@@ -12,13 +15,14 @@ namespace ContosoUniversity.Controllers
     {
 
         private SchoolContext db = new SchoolContext();
+        private readonly IHtmlSanitizerService sanitizer = new HtmlSanitizerService();
 
-        public ActionResult Index()
+        public Task<ActionResult> Index()
         {
-            return View();
+            return Task.FromResult<ActionResult>(View());
         }
 
-        public ActionResult About()
+        public async Task<ActionResult> About()
         {
             IQueryable<EnrollmentDataGroup> data = from student in db.Students
                                                    group student by student.EnrollmentDate into dataGroup
@@ -28,14 +32,14 @@ namespace ContosoUniversity.Controllers
                                                        StudentCount = dataGroup.Count()
                                                    };
 
-            return View(data.ToList());
+            return View(await data.ToListAsync());
         }
 
-        public ActionResult Contact()
+        public Task<ActionResult> Contact()
         {
-            ViewBag.Message = "Your contact page.";
+            ViewBag.Message = sanitizer.Sanitize("Your contact page.");
 
-            return View();
+            return Task.FromResult<ActionResult>(View());
         }
 
         protected override void Dispose(bool disposing)
