@@ -11,7 +11,7 @@ services:
       ASPNETCORE_ENVIRONMENT: Production
       ASPNETCORE_URLS: http://+:8080
       TZ: UTC
-      # External SQL Server is provided separately
+      # External PostgreSQL is provided separately
       DB_HOST: ${DB_HOST:-host.docker.internal}
       DB_NAME: ${DB_NAME:-ContosoUniversity}
       DB_USER: ${DB_USER:-sa}
