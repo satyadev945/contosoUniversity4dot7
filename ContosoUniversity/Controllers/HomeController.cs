@@ -1,6 +1,7 @@
 using ContosoUniversity.DAL;
 using ContosoUniversity.ViewModels;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace ContosoUniversity.Controllers
 {
@@ -20,7 +21,7 @@ namespace ContosoUniversity.Controllers
 
         public ActionResult About()
         {
-            IQueryable<EnrollmentDataGroup> data = from student in db.Students
+            IQueryable<EnrollmentDataGroup> data = from student in db.Students.AsNoTracking()
                                                    group student by student.EnrollmentDate into dataGroup
                                                    select new EnrollmentDataGroup()
                                                    {

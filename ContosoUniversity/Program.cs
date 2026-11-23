@@ -17,12 +17,12 @@ if (string.IsNullOrWhiteSpace(connectionString))
         throw new InvalidOperationException(
             "Database configuration missing. Set ConnectionStrings__SchoolContext or DB_HOST/DB_NAME/DB_USER/DB_PASSWORD.");
     }
-    connectionString = $"Server={host};Database={name};User Id={user};Password={password};TrustServerCertificate=True";
+    connectionString = $"Host={host};Database={name};Username={user};Password={password}";
 }
 
 builder.Services.AddControllersWithViews();
 builder.Services.AddDbContext<SchoolContext>(options =>
-    options.UseSqlServer(connectionString, sql => sql.EnableRetryOnFailure()));
+    options.UseNpgsql(connectionString, npgsql => npgsql.EnableRetryOnFailure()));
 builder.Services.AddHealthChecks();
 
 var app = builder.Build();

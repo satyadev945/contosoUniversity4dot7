@@ -1,5 +1,5 @@
 # Run from the ContosoUniversity directory: docker compose up --build
-# Application only - provide an external SQL Server via ConnectionStrings__SchoolContext.
+# Application only - provide an external PostgreSQL (e.g. postgres:15) via ConnectionStrings__SchoolContext.
 services:
   contosouniversity:
     image: contosouniversity:latest
@@ -14,7 +14,7 @@ services:
       ASPNETCORE_URLS: "http://+:8080"
       TZ: "UTC"
       AppSettings__webpages__Enabled: "false"
-      ConnectionStrings__SchoolContext: "${CONNECTION_STRING:?Set CONNECTION_STRING to your SQL Server connection string}"
+      ConnectionStrings__SchoolContext: "${CONNECTION_STRING:?Set CONNECTION_STRING to your PostgreSQL connection string (Host=...;Database=...;Username=...;Password=...)}"
     volumes:
       - ./logs:/app/logs
     networks:
