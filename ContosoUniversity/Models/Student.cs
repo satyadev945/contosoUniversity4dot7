@@ -34,6 +34,7 @@ namespace ContosoUniversity.Models
             }
         }
 
-        public virtual ICollection<Enrollment> Enrollments { get; set; }
+        // EF Core navigation property (loaded explicitly via Include()/ThenInclude())
+        public ICollection<Enrollment> Enrollments { get; set; } = new List<Enrollment>();
     }
 }
