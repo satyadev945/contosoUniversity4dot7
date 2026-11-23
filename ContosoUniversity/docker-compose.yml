@@ -1,0 +1,28 @@
+# Run from the ContosoUniversity directory: docker compose up --build
+# Application only - provide an external SQL Server via ConnectionStrings__SchoolContext.
+services:
+  contosouniversity:
+    image: contosouniversity:latest
+    build:
+      context: ..
+      dockerfile: ContosoUniversity/Dockerfile
+    container_name: contosouniversity
+    ports:
+      - "8080:8080"
+    environment:
+      ASPNETCORE_ENVIRONMENT: "Production"
+      ASPNETCORE_URLS: "http://+:8080"
+      TZ: "UTC"
+      AppSettings__webpages__Enabled: "false"
+      ConnectionStrings__SchoolContext: "${CONNECTION_STRING:?Set CONNECTION_STRING to your SQL Server connection string}"
+    volumes:
+      - ./logs:/app/logs
+    networks:
+      - app-network
+    restart: unless-stopped
+    # Health endpoint is GET /health (probed by Kubernetes). The runtime image has no curl/wget,
+    # so no container-level healthcheck is defined here.
+
+networks:
+  app-network:
+    driver: bridge

@@ -1,18 +1,37 @@
-# Linux container image for ASP.NET Core (replaces Windows Server Core / IIS image)
-FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
+# syntax=docker/dockerfile:1
+# Build context MUST be the repository root:
+#   docker build -f ContosoUniversity/Dockerfile -t contosouniversity:latest .
+# NOTE: EXPLICIT_BASE_IMAGE (mcr.microsoft.com/dotnet/framework/aspnet:4.7.2) cannot host a net8.0 app,
+# so the matching Linux ASP.NET Core 8.0 runtime image is used.
+
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS builder
 WORKDIR /src
-COPY ContosoUniversity.csproj .
-RUN dotnet restore
-COPY . .
-RUN dotnet publish -c Release -o /app/publish --no-restore -p:DebugType=None -p:DebugSymbols=false -p:UseAppHost=false \
-    && find /app/publish -name "*.pdb" -delete
+
+# Copy project file first to maximise NuGet restore layer caching
+COPY ContosoUniversity/ContosoUniversity.csproj ContosoUniversity/
+RUN dotnet restore ContosoUniversity/ContosoUniversity.csproj
+
+# Copy the remaining source and publish
+COPY ContosoUniversity/ ContosoUniversity/
+RUN dotnet build ContosoUniversity/ContosoUniversity.csproj -c Release --no-restore \
+    && dotnet publish ContosoUniversity/ContosoUniversity.csproj -c Release -o /app/publish --no-build \
+       -p:UseAppHost=false -p:DebugType=None -p:DebugSymbols=false
 
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS final
 WORKDIR /app
-COPY --from=build /app/publish .
-ENV ASPNETCORE_URLS=http://+:8080
-# App settings (formerly web.config appSettings) are overridable via env vars, e.g. AppSettings__webpages:Enabled -> AppSettings__webpages__Enabled (ConfigMap)
-ENV AppSettings__webpages__Enabled=false
+
+ENV ASPNETCORE_ENVIRONMENT=Production \
+    ASPNETCORE_URLS=http://+:8080 \
+    DOTNET_RUNNING_IN_CONTAINER=true \
+    DOTNET_EnableDiagnostics=0 \
+    TZ=UTC \
+    LANG=en_US.UTF-8 \
+    AppSettings__webpages__Enabled=false
 # Supply at runtime: ConnectionStrings__SchoolContext (or DB_HOST/DB_NAME/DB_USER/DB_PASSWORD)
+
+COPY --from=builder /app/publish .
+
+# Non-root user (built into the official .NET 8 images, UID 1654)
+USER app
 EXPOSE 8080
 ENTRYPOINT ["dotnet", "ContosoUniversity.dll"]
