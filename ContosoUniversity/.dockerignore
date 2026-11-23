@@ -1,0 +1,33 @@
+# Build output
+**/bin/
+**/obj/
+**/publish/
+**/out/
+
+# IDE / user files
+**/.vs/
+**/.vscode/
+**/.idea/
+*.user
+*.suo
+*.userprefs
+
+# Source control
+**/.git
+**/.gitignore
+**/.gitattributes
+
+# Debug symbols and temp artifacts
+**/*.pdb
+**/*.log
+**/*.tmp
+**/*.temp
+**/TestResults/
+**/*.cache
+**/node_modules/
+
+# Docker files and docs
+Dockerfile*
+.dockerignore
+docker-compose*
+**/*.md

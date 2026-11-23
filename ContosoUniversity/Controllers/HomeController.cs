@@ -1,10 +1,10 @@
-﻿using ContosoUniversity.DAL;
+using ContosoUniversity.DAL;
 using ContosoUniversity.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web;
-using System.Web.Mvc;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace ContosoUniversity.Controllers
 {
@@ -35,6 +35,11 @@ namespace ContosoUniversity.Controllers
         {
             ViewBag.Message = "Your contact page.";
 
+            return View();
+        }
+
+        public ActionResult Error()
+        {
             return View();
         }
 
