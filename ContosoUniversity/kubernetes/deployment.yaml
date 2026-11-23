@@ -1,0 +1,77 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: contosouniversity
+  namespace: contosouniversity
+  labels:
+    app: contosouniversity
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: contosouniversity
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  template:
+    metadata:
+      labels:
+        app: contosouniversity
+    spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1654
+      terminationGracePeriodSeconds: 30
+      containers:
+        - name: contosouniversity
+          image: "{{IMAGE_URI}}"
+          imagePullPolicy: Always
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+          env:
+            - name: ASPNETCORE_ENVIRONMENT
+              value: "Production"
+            - name: ASPNETCORE_URLS
+              value: "http://+:8080"
+            - name: TZ
+              value: "UTC"
+            # Created by deploy-image.sh from the SQL Server connection string you enter
+            - name: ConnectionStrings__SchoolContext
+              valueFrom:
+                secretKeyRef:
+                  name: contosouniversity-secrets
+                  key: SCHOOL_DB_CONNECTION_STRING
+                  optional: true
+          resources:
+            requests:
+              cpu: "250m"
+              memory: "512Mi"
+            limits:
+              cpu: "500m"
+              memory: "1Gi"
+          startupProbe:
+            httpGet:
+              path: /health
+              port: http
+            periodSeconds: 5
+            failureThreshold: 30
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: http
+            initialDelaySeconds: 10
+            periodSeconds: 20
+            timeoutSeconds: 5
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: http
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
