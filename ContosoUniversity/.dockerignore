@@ -2,6 +2,8 @@
 **/bin/
 **/obj/
 **/publish/
+bin/
+obj/
 # IDE / user files
 .vs/
 .vscode/
@@ -9,6 +11,8 @@
 *.user
 *.suo
 *.userprefs
+.DS_Store
+launchSettings.json
 # Debug symbols and temp files
 *.pdb
 *.tmp
@@ -20,15 +24,18 @@
 .git/
 .gitignore
 .gitattributes
-# Docker files
-Dockerfile*
+# Docker / deployment files
+**/Dockerfile*
 .dockerignore
-docker-compose*
+**/docker-compose*
+**/kubernetes/
+**/scripts/
+**/docs/
 # Docs and test results
 *.md
 TestResults/
-# Node / package caches
 **/node_modules/
+images/
 # Intellisense/doc-only scripts not needed at runtime
 **/*vsdoc.js
 **/*.intellisense.js
