@@ -15,15 +15,15 @@ string connectionString = builder.Configuration.GetConnectionString("SchoolConte
 if (string.IsNullOrWhiteSpace(connectionString))
 {
     var host = Environment.GetEnvironmentVariable("DB_HOST") ?? "localhost";
-    var port = Environment.GetEnvironmentVariable("DB_PORT") ?? "1433";
+    var port = Environment.GetEnvironmentVariable("DB_PORT") ?? "5432";
     var name = Environment.GetEnvironmentVariable("DB_NAME") ?? "ContosoUniversity";
-    var user = Environment.GetEnvironmentVariable("DB_USER") ?? "sa";
+    var user = Environment.GetEnvironmentVariable("DB_USER") ?? "postgres";
     var password = Environment.GetEnvironmentVariable("DB_PASSWORD") ?? string.Empty;
-    connectionString = $"Server={host},{port};Database={name};User Id={user};Password={password};TrustServerCertificate=True;MultipleActiveResultSets=True";
+    connectionString = $"Host={host};Port={port};Database={name};Username={user};Password={password}";
 }
 
 builder.Services.AddDbContext<SchoolContext>(options =>
-    options.UseSqlServer(connectionString, sql => sql.EnableRetryOnFailure())
+    options.UseNpgsql(connectionString, sql => sql.EnableRetryOnFailure())
            .AddInterceptors(new SchoolInterceptorLogging()));
 
 builder.Services.AddHealthChecks();

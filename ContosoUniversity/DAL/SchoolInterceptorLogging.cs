@@ -1,4 +1,5 @@
 using System.Data.Common;
+using Npgsql;
 using ContosoUniversity.Logging;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 
