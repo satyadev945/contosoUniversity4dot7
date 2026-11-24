@@ -1,33 +1,26 @@
-# Build output
-**/bin/
-**/obj/
-**/publish/
-**/out/
-# Debug symbols and temp files
-**/*.pdb
-**/*.user
-**/*.suo
-**/*.log
-**/*.tmp
-**/*.cache
-**/Debug/
-**/Release/
-# VS / IDE
+bin/
+obj/
+publish/
+out/
+.git/
 .vs/
 .vscode/
 .idea/
-*.sln.DotSettings.user
-# Source control
-.git
-.gitignore
-.gitattributes
-# Docker files
+*.user
+*.suo
+*.pdb
+*.log
+*.tmp
+*.cache
+*.md
+.DS_Store
+launchSettings.json
 Dockerfile*
 .dockerignore
 docker-compose*
-# Packages and test artifacts
+kubernetes/
+scripts/
+docs/
 packages/
 TestResults/
 node_modules/
-# Docs
-*.md
