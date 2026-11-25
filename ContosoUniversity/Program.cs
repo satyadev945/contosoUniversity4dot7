@@ -24,7 +24,7 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddApplicationInsightsTelemetry();
 builder.Services.AddSingleton<SchoolInterceptorLogging>();
 builder.Services.AddDbContext<SchoolContext>((serviceProvider, options) =>
-    options.UseSqlServer(connectionString, sql => sql.EnableRetryOnFailure())
+    options.UseNpgsql(connectionString, npgsql => npgsql.EnableRetryOnFailure())
            .AddInterceptors(serviceProvider.GetRequiredService<SchoolInterceptorLogging>()));
 builder.Services.AddHealthChecks();
 

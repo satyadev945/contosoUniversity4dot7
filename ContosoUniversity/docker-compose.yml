@@ -11,7 +11,7 @@ services:
       - ASPNETCORE_ENVIRONMENT=Production
       - ASPNETCORE_URLS=http://+:8080
       - TZ=UTC
-      # External SQL Server connection (provided separately)
+      # External PostgreSQL connection (provided separately)
       - ConnectionStrings__SchoolContext=${SCHOOL_CONNECTION_STRING:?Set SCHOOL_CONNECTION_STRING}
       - APPLICATIONINSIGHTS_CONNECTION_STRING=${APPLICATIONINSIGHTS_CONNECTION_STRING:-}
     volumes:
