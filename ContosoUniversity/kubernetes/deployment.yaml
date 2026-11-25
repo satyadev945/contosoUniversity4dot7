@@ -1,0 +1,94 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: contosouniversity-secrets
+  namespace: {{NAMESPACE}}
+  labels:
+    app: contosouniversity
+type: Opaque
+stringData:
+  connection-string: "{{CONNECTION_STRING}}"
+  appinsights-connection-string: "{{APPINSIGHTS_CONNECTION_STRING}}"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: contosouniversity
+  namespace: {{NAMESPACE}}
+  labels:
+    app: contosouniversity
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: contosouniversity
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  template:
+    metadata:
+      labels:
+        app: contosouniversity
+    spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1654
+      terminationGracePeriodSeconds: 30
+      containers:
+        - name: contosouniversity
+          image: {{IMAGE_URI}}
+          imagePullPolicy: Always
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+          env:
+            - name: ASPNETCORE_ENVIRONMENT
+              value: "Production"
+            - name: ASPNETCORE_URLS
+              value: "http://+:8080"
+            - name: TZ
+              value: "UTC"
+            - name: ConnectionStrings__SchoolContext
+              valueFrom:
+                secretKeyRef:
+                  name: contosouniversity-secrets
+                  key: connection-string
+            - name: APPLICATIONINSIGHTS_CONNECTION_STRING
+              valueFrom:
+                secretKeyRef:
+                  name: contosouniversity-secrets
+                  key: appinsights-connection-string
+          resources:
+            requests:
+              cpu: "250m"
+              memory: "512Mi"
+            limits:
+              cpu: "500m"
+              memory: "1Gi"
+          securityContext:
+            allowPrivilegeEscalation: false
+          startupProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            periodSeconds: 5
+            failureThreshold: 30
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            initialDelaySeconds: 10
+            periodSeconds: 20
+            timeoutSeconds: 5
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3

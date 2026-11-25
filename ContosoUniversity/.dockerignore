@@ -5,6 +5,7 @@
 **/.git/
 **/.gitignore
 **/.gitattributes
+**/.DS_Store
 **/*.pdb
 **/*.user
 **/*.suo
@@ -12,7 +13,13 @@
 **/*.tmp
 **/TestResults/
 **/node_modules/
-Dockerfile*
+**/launchSettings.json
+**/appsettings.Development.json
+**/kubernetes/
+**/scripts/
+**/docs/
+**/docker-compose*.yml
+**/Dockerfile*
 .dockerignore
-appsettings.Development.json
+images/
 *.md
