@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -16,14 +16,15 @@ namespace ContosoUniversity.Models
         [Column(TypeName = "money")]
         public decimal Budget { get; set; }
 
+        // Display format only; the HTML5 date input receives yyyy-MM-dd automatically in edit mode.
         [DataType(DataType.Date)]
-        [DisplayFormat(DataFormatString = "{0:dd-MM-yyyy}", ApplyFormatInEditMode = true)]
+        [DisplayFormat(DataFormatString = "{0:dd-MM-yyyy}", ApplyFormatInEditMode = false)]
         [Display(Name = "Start Date")]
         public DateTime StartDate { get; set; }
 
         public int? InstructorID { get; set; }
 
-        public virtual Instructor Administrator { get; set; }
-        public virtual ICollection<Course> Courses { get; set; }
+        public Instructor Administrator { get; set; }
+        public ICollection<Course> Courses { get; set; }
     }
 }
