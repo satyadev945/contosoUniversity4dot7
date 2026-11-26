@@ -6,6 +6,10 @@ namespace ContosoUniversity.DAL
 {
     public class SchoolContext : DbContext
     {
+        public SchoolContext() : base(ConnectionStringProvider.Get())
+        {
+        }
+
         public DbSet<Course> Courses { get; set; }
         public DbSet<Department> Departments { get; set; }
         public DbSet<Enrollment> Enrollments { get; set; }
