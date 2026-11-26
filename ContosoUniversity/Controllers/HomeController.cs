@@ -1,24 +1,25 @@
-﻿using ContosoUniversity.DAL;
-using ContosoUniversity.ViewModels;
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Web;
-using System.Web.Mvc;
+using ContosoUniversity.DAL;
+using ContosoUniversity.ViewModels;
+using Microsoft.AspNetCore.Mvc;
 
 namespace ContosoUniversity.Controllers
 {
     public class HomeController : Controller
     {
+        private readonly SchoolContext db;
 
-        private SchoolContext db = new SchoolContext();
+        public HomeController(SchoolContext context)
+        {
+            db = context;
+        }
 
-        public ActionResult Index()
+        public IActionResult Index()
         {
             return View();
         }
 
-        public ActionResult About()
+        public IActionResult About()
         {
             IQueryable<EnrollmentDataGroup> data = from student in db.Students
                                                    group student by student.EnrollmentDate into dataGroup
@@ -31,17 +32,16 @@ namespace ContosoUniversity.Controllers
             return View(data.ToList());
         }
 
-        public ActionResult Contact()
+        public IActionResult Contact()
         {
             ViewBag.Message = "Your contact page.";
 
             return View();
         }
 
-        protected override void Dispose(bool disposing)
+        public IActionResult Error()
         {
-            db.Dispose();
-            base.Dispose(disposing);
+            return View();
         }
     }
 }
