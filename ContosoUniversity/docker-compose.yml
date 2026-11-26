@@ -11,7 +11,7 @@ services:
       - ASPNETCORE_ENVIRONMENT=Production
       - ASPNETCORE_URLS=http://+:8080
       - TZ=UTC
-      # External SQL Server is provided separately
+      # External PostgreSQL is provided separately (Host=...;Port=5432;Database=...;Username=...;Password=...)
       - ConnectionStrings__SchoolContext=${SCHOOL_CONNECTION_STRING:?Set SCHOOL_CONNECTION_STRING}
     volumes:
       - ./logs:/app/logs

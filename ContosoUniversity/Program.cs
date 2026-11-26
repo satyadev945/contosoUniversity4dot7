@@ -10,7 +10,7 @@ using Microsoft.Extensions.Logging;
 var builder = WebApplication.CreateBuilder(args);
 
 // The connection string is supplied through configuration / environment variable:
-//   ConnectionStrings__SchoolContext=Server=${DB_HOST};Database=${DB_NAME};User Id=${DB_USER};Password=${DB_PASSWORD};TrustServerCertificate=True
+//   ConnectionStrings__SchoolContext=Host=${DB_HOST};Port=5432;Database=${DB_NAME};Username=${DB_USER};Password=${DB_PASSWORD}
 var connectionString = builder.Configuration.GetConnectionString("SchoolContext");
 if (string.IsNullOrWhiteSpace(connectionString))
 {
@@ -21,7 +21,7 @@ if (string.IsNullOrWhiteSpace(connectionString))
 builder.Services.AddControllersWithViews();
 builder.Services.AddDbContext<SchoolContext>(options =>
     options.UseLazyLoadingProxies()
-           .UseSqlServer(connectionString, sql => sql.EnableRetryOnFailure()));
+           .UseNpgsql(connectionString, sql => sql.EnableRetryOnFailure()));
 builder.Services.AddHealthChecks();
 
 var app = builder.Build();
