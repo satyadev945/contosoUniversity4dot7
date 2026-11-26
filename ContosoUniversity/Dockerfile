@@ -1,19 +1,27 @@
-# Build context: the ContosoUniversity project directory
-# docker build -t contosouniversity .
-FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
+# Build context: repository root (the folder containing ContosoUniversity.sln)
+# docker build -f ContosoUniversity/Dockerfile -t contosouniversity:latest .
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS builder
 WORKDIR /src
-COPY ContosoUniversity.csproj ./
-RUN dotnet restore ContosoUniversity.csproj
-COPY . .
-RUN dotnet publish ContosoUniversity.csproj -c Release -o /app/publish --no-restore /p:UseAppHost=false /p:DebugType=None /p:DebugSymbols=false
+COPY ContosoUniversity/ContosoUniversity.csproj ContosoUniversity/
+RUN dotnet restore ContosoUniversity/ContosoUniversity.csproj
+COPY ContosoUniversity/ ContosoUniversity/
+RUN dotnet build ContosoUniversity/ContosoUniversity.csproj -c Release --no-restore \
+ && dotnet publish ContosoUniversity/ContosoUniversity.csproj -c Release -o /app/publish --no-build /p:UseAppHost=false
 
-FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS final
+FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS runtime
 WORKDIR /app
-COPY --from=build /app/publish .
+COPY --from=builder /app/publish .
 
-ENV ASPNETCORE_URLS=http://+:8080
-# Supply at runtime, e.g.:
-# ConnectionStrings__SchoolContext=Server=${DB_HOST};Database=${DB_NAME};User Id=${DB_USER};Password=${DB_PASSWORD};TrustServerCertificate=True
+ENV ASPNETCORE_ENVIRONMENT=Production \
+    ASPNETCORE_URLS=http://+:8080 \
+    DOTNET_RUNNING_IN_CONTAINER=true \
+    DOTNET_EnableDiagnostics=0 \
+    DOTNET_gcServer=0 \
+    TZ=UTC
+# Supply at runtime:
+# ConnectionStrings__SchoolContext=Server=<host>;Database=<db>;User Id=<user>;Password=<pwd>;TrustServerCertificate=True
+
 EXPOSE 8080
-
+# Non-root user (numeric UID provided by the official .NET 8 images via APP_UID)
+USER $APP_UID
 ENTRYPOINT ["dotnet", "ContosoUniversity.dll"]
