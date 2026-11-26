@@ -1,34 +1,26 @@
-# Build output
 **/bin/
 **/obj/
 **/publish/
 **/out/
-
-# Debug symbols and temp files
-**/*.pdb
-**/*.tmp
-**/*.temp
-**/*.log
-**/*.user
-**/*.suo
-**/*.cache
-**/TestResults/
-
-# IDE / VCS
 **/.vs/
 **/.vscode/
 **/.idea/
+.git/
 **/.git
 **/.gitignore
 **/.gitattributes
-
-# Docker files
-**/Dockerfile*
-**/.dockerignore
-**/docker-compose*
-
-# Docs and misc
-**/*.md
+**/*.user
+**/*.suo
+**/*.pdb
+**/*.tmp
+**/*.log
+**/.DS_Store
+**/launchSettings.json
+**/TestResults/
 **/node_modules/
-**/secrets.dev.yaml
-**/values.dev.yaml
+**/*.md
+images/
+docker-compose*.yml
+ContosoUniversity/kubernetes/
+ContosoUniversity/scripts/
+ContosoUniversity/docs/

@@ -1,0 +1,34 @@
+services:
+  contosouniversity:
+    build:
+      context: ..
+      dockerfile: ContosoUniversity/Dockerfile
+    image: contosouniversity:latest
+    container_name: contosouniversity
+    ports:
+      - "8080:8080"
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+      ASPNETCORE_URLS: http://+:8080
+      TZ: UTC
+      # External SQL Server connection (provided separately)
+      DB_HOST: ${DB_HOST:-host.docker.internal}
+      DB_NAME: ${DB_NAME:-ContosoUniversity}
+      DB_USER: ${DB_USER:-}
+      DB_PASSWORD: ${DB_PASSWORD:-}
+    volumes:
+      - ./logs:/app/logs
+    healthcheck:
+      # No curl/wget in the runtime image: use a bash TCP probe against Kestrel
+      test: ["CMD-SHELL", "exec 3<>/dev/tcp/127.0.0.1/8080 || exit 1"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 40s
+    restart: unless-stopped
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
